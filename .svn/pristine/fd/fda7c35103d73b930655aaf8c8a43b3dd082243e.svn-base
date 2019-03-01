@@ -1,0 +1,189 @@
+﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="RequestList.aspx.cs" Inherits="Certification.RequestList" %>
+
+<%@ Register Src="Controls/menu.ascx" TagName="menu" TagPrefix="uc1" %>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Certification List</title>
+    <link href="Styles/global.css" rel="stylesheet" type="text/css" />
+    <script type="text/javascript" src="../JS/calendar.js"></script>
+    <style type="text/css"> 
+.Freezing 
+   { 
+     
+   /*position:relative ; 
+   table-layout:fixed;
+   top:expression(this.offsetParent.scrollTop);   
+   z-index: 10;*/
+   }
+ 
+.Freezing th{text-overflow:ellipsis;overflow:hidden;white-space: nowrap;padding:2px;}
+</style> 
+</head>
+<body>
+    <uc1:menu ID="menu1" runat="server" />
+    <p class="LocationTag t-l">
+        <asp:Label ID="lbLocationTag" runat="server">Home >> RequestList</asp:Label>
+    </p>
+    <form id="form1" runat="server">
+        <div style="margin: 10px">
+            <div style="width: 100%" id="divFilter" runat="server">
+                <table style="width: 800px; font-size: 14px; margin: 0;">
+                    <tbody>
+                        <tr>
+                            <td width="80px" align="center">
+                                <%--<b>Site</b>--%>
+                                <b>查询条件</b>
+                            </td>
+                            <td width="80px">
+                               <%-- <asp:DropDownList ID="ddlSites" runat="server" AutoPostBack="True" OnSelectedIndexChanged="ddlSites_SelectedIndexChanged">
+                                </asp:DropDownList>--%>
+                                <asp:DropDownList ID="ddlItems" runat="server">
+                                    <asp:ListItem Value="-1">--请选择--</asp:ListItem>
+                                    <asp:ListItem Value="0">姓名</asp:ListItem>
+                                    <asp:ListItem Value="1">Workcell</asp:ListItem>
+                                    <asp:ListItem Value="2">EEID</asp:ListItem>
+                                    <asp:ListItem Value="3">Category</asp:ListItem>
+                                    <asp:ListItem Value="4">Skill SN</asp:ListItem>
+                                </asp:DropDownList>
+                            </td>
+                            <td width="150px" align="center">
+                               <%-- <b>Form</b>--%>
+                                <asp:TextBox ID="txtItem" height="20px" Width="95%" runat="server"></asp:TextBox>
+                            </td>
+                            <td width="80px">
+                               <%-- <asp:DropDownList ID="ddlForms" runat="server">
+                                </asp:DropDownList>--%>
+                            </td>
+                           <%-- <td width="80px" align="center">
+                                <asp:DropDownList ID="ddlDate" runat="server">
+                                    <asp:ListItem Value="-1">--请选择--</asp:ListItem>
+                                    <asp:ListItem Value="0">On Boarding Date</asp:ListItem>
+                                    <asp:ListItem Value="1">Certificate Date</asp:ListItem>
+                                </asp:DropDownList>
+                            </td>
+                            <td width="150px">
+                                <asp:TextBox ID="txtStartDate" height="20px" Width="95%" runat="server" CssClass="InputCss" MaxLength="10" onclick="setday(this,false)" onkeypress="return validateKey(this,false, getkeyCode(event));" Style="ime-mode: Disabled;"></asp:TextBox>
+                            </td>
+                               <td width="10px">
+                                <b>~</b>
+                            </td>
+                            <td width="150px">
+                                <asp:TextBox ID="txtEndDate" height="20px" Width="95%" runat="server" CssClass="InputCss" MaxLength="10" onclick="setday(this,false)" onkeypress="return validateKey(this,false, getkeyCode(event));" Style="ime-mode: Disabled;"></asp:TextBox>
+                            </td>--%>
+                               <td width="72px">
+                                <asp:Button ID="btnSubmit" runat="server" Text="Select" CssClass="SubmitStyle" OnClick="btnSubmit_Click" />
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div id="tablebody" style="overflow-x: scroll; width:120%">
+                <asp:GridView ID="dgvRequests" runat="server" AutoGenerateColumns="False" OnPageIndexChanging="dgvRequests_PageIndexChanging"
+                    EnableViewState="False" OnRowCreated="dgvRequests_RowCreated">
+                    <Columns>
+                        <asp:BoundField DataField="Item" HeaderText="Item" SortExpression="Item">
+                             <HeaderStyle Width="10px"></HeaderStyle>
+                            <ItemStyle HorizontalAlign="Center" />
+                        </asp:BoundField>
+                        <asp:BoundField DataField="Name" HeaderText="Name" SortExpression="Name">
+                        </asp:BoundField>
+                        <asp:BoundField DataField="Workcell" HeaderText="Workcell/ROP" SortExpression="Workcell">
+                            <HeaderStyle Width="80px"></HeaderStyle>
+                            <ItemStyle HorizontalAlign="Center" />
+                        </asp:BoundField>
+                        <asp:BoundField DataField="EEID" HeaderText="EEID" SortExpression="EEID">
+                        </asp:BoundField>
+                        <asp:BoundField DataField="NTID" HeaderText="NTID" SortExpression="NTID" />
+                        <asp:BoundField DataField="OnBoardingDate" HeaderText="On Boarding Date" DataFormatString="{0:d}" SortExpression="OnBoardingDate">
+                             <HeaderStyle Width="100px"></HeaderStyle>
+                            <ItemStyle HorizontalAlign="Center" />
+                        </asp:BoundField>
+                          <asp:BoundField DataField="Category" HeaderText="Category" SortExpression="Category">
+                        </asp:BoundField>
+                          <asp:BoundField DataField="SkillSN" HeaderText="Skill SN" SortExpression="SkillSN">
+                        </asp:BoundField>
+                          <asp:BoundField DataField="CertificateDate" HeaderText="Certificate Date" DataFormatString="{0:d}" SortExpression="CertificateDate">
+                               <HeaderStyle Width="100px"></HeaderStyle>
+                            <ItemStyle HorizontalAlign="Center" />
+                        </asp:BoundField>
+                          <asp:BoundField DataField="1st_1" HeaderText="1st(Re-certificate)" DataFormatString="{0:d}" SortExpression="1st_1">
+                              <HeaderStyle Width="100px"></HeaderStyle>
+                            <ItemStyle HorizontalAlign="Center" />
+                        </asp:BoundField>
+                          <asp:BoundField DataField="1st_2" HeaderText="1st(Re-certificate)" SortExpression="1st_2">
+                        </asp:BoundField>
+                           <asp:BoundField DataField="2nd_1" HeaderText="2nd(Re-certificate)" DataFormatString="{0:d}" SortExpression="2nd_1">
+                                 <HeaderStyle Width="100px"></HeaderStyle>
+                            <ItemStyle HorizontalAlign="Center" />
+                        </asp:BoundField>
+                          <asp:BoundField DataField="2nd_2" HeaderText="2nd(Re-certificate)" SortExpression="2nd_2">
+                        </asp:BoundField>
+                          <asp:BoundField DataField="3rd_1" HeaderText="3rd(Re-certificate)" DataFormatString="{0:d}" SortExpression="3rd_1">
+                                <HeaderStyle Width="100px"></HeaderStyle>
+                            <ItemStyle HorizontalAlign="Center" />
+                        </asp:BoundField>
+                          <asp:BoundField DataField="3rd_2" HeaderText="3rd(Re-certificate)" SortExpression="3rd_2">
+                        </asp:BoundField>
+                          <asp:BoundField DataField="4th_1" HeaderText="4th(Re-certificate)" DataFormatString="{0:d}" SortExpression="4th_1">
+                                <HeaderStyle Width="100px"></HeaderStyle>
+                            <ItemStyle HorizontalAlign="Center" />
+                        </asp:BoundField>
+                          <asp:BoundField DataField="4th_2" HeaderText="4th(Re-certificate)" SortExpression="4th_2">
+                        </asp:BoundField>
+                          <asp:BoundField DataField="5th_1" HeaderText="5th(Re-certificate)" DataFormatString="{0:d}" SortExpression="5th_1">
+                                <HeaderStyle Width="100px"></HeaderStyle>
+                            <ItemStyle HorizontalAlign="Center" />
+                        </asp:BoundField>
+                          <asp:BoundField DataField="5th_2" HeaderText="5th(Re-certificate)" SortExpression="5th_2">
+                        </asp:BoundField>
+                          <asp:BoundField DataField="6th_1" HeaderText="6th(Re-certificate)" DataFormatString="{0:d}" SortExpression="6th_1">
+                                <HeaderStyle Width="100px"></HeaderStyle>
+                            <ItemStyle HorizontalAlign="Center" />
+                        </asp:BoundField>
+                          <asp:BoundField DataField="6th_2" HeaderText="6th(Re-certificate)" SortExpression="6th_2">
+                        </asp:BoundField>
+                          <asp:BoundField DataField="7th_1" HeaderText="7th(Re-certificate)" DataFormatString="{0:d}" SortExpression="7th_1">
+                                <HeaderStyle Width="100px"></HeaderStyle>
+                            <ItemStyle HorizontalAlign="Center" />
+                        </asp:BoundField>
+                          <asp:BoundField DataField="7th_2" HeaderText="7th(Re-certificate)" SortExpression="7th_2">
+                        </asp:BoundField>
+                          <asp:BoundField DataField="8th_1" HeaderText="8th(Re-certificate)" DataFormatString="{0:d}" SortExpression="8th_1">
+                                <HeaderStyle Width="100px"></HeaderStyle>
+                            <ItemStyle HorizontalAlign="Center" />
+                        </asp:BoundField>
+                          <asp:BoundField DataField="8th_2" HeaderText="8th(Re-certificate)" SortExpression="8th_2">
+                        </asp:BoundField>
+                          <asp:BoundField DataField="9th_1" HeaderText="9th(Re-certificate)" DataFormatString="{0:d}" SortExpression="9th_1">
+                                <HeaderStyle Width="100px"></HeaderStyle>
+                            <ItemStyle HorizontalAlign="Center" />
+                        </asp:BoundField>
+                          <asp:BoundField DataField="9th_2" HeaderText="9th(Re-certificate)" SortExpression="9th_2">
+                        </asp:BoundField>
+                          <asp:BoundField DataField="10th_1" HeaderText="10th(Re-certificate)" DataFormatString="{0:d}" SortExpression="10th_1">
+                                <HeaderStyle Width="100px"></HeaderStyle>
+                            <ItemStyle HorizontalAlign="Center" />
+                        </asp:BoundField>
+                          <asp:BoundField DataField="10th_2" HeaderText="10th(Re-certificate)" SortExpression="10th_2">
+                        </asp:BoundField>
+                          <asp:BoundField DataField="11th_1" HeaderText="11th(Re-certificate)" DataFormatString="{0:d}" SortExpression="11th_1">
+                                <HeaderStyle Width="100px"></HeaderStyle>
+                            <ItemStyle HorizontalAlign="Center" />
+                        </asp:BoundField>
+                         <asp:BoundField DataField="11th_2" HeaderText="11th(Re-certificate)" SortExpression="11th_2">
+                        </asp:BoundField>
+                          <asp:BoundField DataField="12th_1" HeaderText="12th(Re-certificate)" DataFormatString="{0:d}" SortExpression="12th_1">
+                                <HeaderStyle Width="100px"></HeaderStyle>
+                            <ItemStyle HorizontalAlign="Center" />
+                        </asp:BoundField>
+                          <asp:BoundField DataField="12th_2" HeaderText="12th(Re-certificate)" SortExpression="12th_2">
+                        </asp:BoundField>
+                    </Columns>
+                    <HeaderStyle BackColor="#006699" Font-Bold="True" ForeColor="White" CssClass="Freezing"/>
+                </asp:GridView>
+            </div>
+        </div>
+    </form>
+</body>
+</html>

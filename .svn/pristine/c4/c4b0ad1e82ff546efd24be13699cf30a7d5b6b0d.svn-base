@@ -1,0 +1,310 @@
+﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="RequestList.aspx.cs" Inherits="Certification.RequestList" %>
+
+<%@ Register Src="Controls/menu.ascx" TagName="menu" TagPrefix="uc1" %>
+<%@ Register Src="~/Controls/Menu.ascx" TagPrefix="uc2" TagName="Menu" %>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Certification List</title>
+    <link href="Styles/global.css" rel="stylesheet" type="text/css" />
+    <link href="Styles/common.css" rel="stylesheet" />
+    <script type="text/javascript" src="Scripts/jquery-1.7.1.min.js"></script>
+    <script type="text/javascript" src="../JS/calendar.js"></script>
+    <style type="text/css">
+        .Freezing {
+            /*position:relative ; 
+   table-layout:fixed;
+   top:expression(this.offsetParent.scrollTop);   
+   z-index: 10;*/
+        }
+
+            .Freezing th {
+                text-overflow: ellipsis;
+                overflow: hidden;
+                white-space: nowrap;
+                /*padding: 2px;*/
+                padding: 2px 10px 2px 10px;
+            }
+
+        .txt80 {
+            height: 24px;
+            width: 80px;
+        }
+
+        .txt150 {
+            height: 24px;
+            width: 150px;
+        }
+
+        .txt180 {
+            height: 24px;
+            width: 180px;
+        }
+
+        .txt220 {
+            height: 24px;
+            width: 220px;
+        }
+
+        input {
+            height: 24px;
+        }
+    </style>
+
+    <script type="text/javascript">
+        $(function () {
+            ////处理GridVIew表头合并
+            $("#dgvRequests").find("th").each(function (thindex, thitem) {
+                var headCaption = $(thitem).text();
+                if (headCaption == "1st(Re-certificate)") {
+                    if (thindex == 9 || thindex == 10) {
+                        if (thindex == 9)
+                            $(this).attr("colspan", 2).text(headCaption).css({ "padding-left": "15px", "padding-right": "15px" });
+                        else
+                            $(this).hide();
+                    }
+                }
+
+                if (headCaption == "2nd(Re-certificate)") {
+                    if (thindex == 11 || thindex == 12) {
+                        if (thindex == 11)
+                            $(this).attr("colspan", 2).text(headCaption).css({ "padding-left": "15px", "padding-right": "15px" });
+                        else
+                            $(this).hide();
+                    }
+                }
+
+                if (headCaption == "3rd(Re-certificate)") {
+                    if (thindex == 13 || thindex == 14) {
+                        if (thindex == 13)
+                            $(this).attr("colspan", 2).text(headCaption).css({ "padding-left": "15px", "padding-right": "15px" });
+                        else
+                            $(this).hide();
+                    }
+                }
+
+
+                if (headCaption == "4th(Re-certificate)") {
+                    if (thindex == 15 || thindex == 16) {
+                        if (thindex == 15)
+                            $(this).attr("colspan", 2).text(headCaption).css({ "padding-left": "15px", "padding-right": "15px" });
+                        else
+                            $(this).hide();
+                    }
+                }
+
+
+                if (headCaption == "5th(Re-certificate)") {
+                    if (thindex == 17 || thindex == 18) {
+                        if (thindex == 17)
+                            $(this).attr("colspan", 2).text(headCaption).css({ "padding-left": "15px", "padding-right": "15px" });
+                        else
+                            $(this).hide();
+                    }
+                }
+
+                if (headCaption == "6th(Re-certificate)") {
+                    if (thindex == 19 || thindex == 20) {
+                        if (thindex == 19)
+                            $(this).attr("colspan", 2).text(headCaption).css({ "padding-left": "15px", "padding-right": "15px" });
+                        else
+                            $(this).hide();
+                    }
+                }
+
+                if (headCaption == "7th(Re-certificate)") {
+                    if (thindex == 21 || thindex == 22) {
+                        if (thindex == 21)
+                            $(this).attr("colspan", 2).text(headCaption).css({ "padding-left": "15px", "padding-right": "15px" });
+                        else
+                            $(this).hide();
+                    }
+                }
+
+                if (headCaption == "8th(Re-certificate)") {
+                    if (thindex == 23 || thindex == 24) {
+                        if (thindex == 23)
+                            $(this).attr("colspan", 2).text(headCaption).css({ "padding-left": "15px", "padding-right": "15px" });
+                        else
+                            $(this).hide();
+                    }
+                }
+
+                if (headCaption == "9th(Re-certificate)") {
+                    if (thindex == 25 || thindex == 26) {
+                        if (thindex == 25)
+                            $(this).attr("colspan", 2).text(headCaption).css({ "padding-left": "15px", "padding-right": "15px" });
+                        else
+                            $(this).hide();
+                    }
+                }
+
+                if (headCaption == "10th(Re-certificate)") {
+                    if (thindex == 27 || thindex == 28) {
+                        if (thindex == 27)
+                            $(this).attr("colspan", 2).text(headCaption).css({ "padding-left": "15px", "padding-right": "15px" });
+                        else
+                            $(this).hide();
+                    }
+                }
+
+                if (headCaption == "11th(Re-certificate)") {
+                    if (thindex == 29 || thindex == 30) {
+                        if (thindex == 29)
+                            $(this).attr("colspan", 2).text(headCaption).css({ "padding-left": "15px", "padding-right": "15px" });
+                        else
+                            $(this).hide();
+                    }
+                }
+
+                if (headCaption == "12th(Re-certificate)") {
+                    if (thindex == 31 || thindex == 32) {
+                        if (thindex == 31)
+                            $(this).attr("colspan", 2).text(headCaption).css({ "padding-left": "15px", "padding-right": "15px" });
+                        else
+                            $(this).hide();
+                    }
+                }
+
+
+            });
+
+            //处理body顶部宽度
+            $("#Header").width(this.body.scrollWidth);
+            $("#nav ul > li").eq(0).addClass("active").siblings().removeClass("active");
+        });
+
+    </script>
+
+</head>
+<body>
+    <uc2:Menu runat="server" ID="Menu" />
+
+    <p class="LocationTag t-l">
+        <asp:Label ID="lbLocationTag" runat="server">Home >> RequestList</asp:Label>
+    </p>
+    <form id="form1" runat="server">
+        <div id="divFilter" runat="server">
+            <table style="width: 800px; font-size: 14px; margin: 0;">
+                <tr>
+                    <td width="80px" align="center">
+                        <%--<b>Site</b>--%>
+                        <b>查询条件</b>
+                    </td>
+                    <td width="80px">
+                        <asp:DropDownList ID="ddlItems" CssClass="txt80" runat="server">
+                            <asp:ListItem Value="-1">--请选择--</asp:ListItem>
+                            <asp:ListItem Value="0">姓名</asp:ListItem>
+                            <asp:ListItem Value="1">Workcell</asp:ListItem>
+                            <asp:ListItem Value="2">EEID</asp:ListItem>
+                            <asp:ListItem Value="3">Category</asp:ListItem>
+                            <asp:ListItem Value="4">Skill SN</asp:ListItem>
+                        </asp:DropDownList>
+                    </td>
+                    <td width="150px" align="center">
+                        <asp:TextBox ID="txtItem" Height="20px" Width="95%" runat="server"></asp:TextBox>
+                    </td>
+                    <td width="72px">
+                        <asp:Button ID="btnSubmit" runat="server" Text="Select" CssClass="txt80" OnClick="btnSubmit_Click" />
+                    </td>
+                    <td width="20px"></td>
+                    <td width="80px">
+                        <asp:FileUpload ID="FileUpload1" runat="server" />
+                    </td>
+                    <td width="72px">
+                        <asp:Button ID="btnUploadExcel" runat="server" Text="UploadExcel" OnClick="btnUploadExcel_Click" />
+                    </td>
+                    <%--            <td style="width: 20px;"></td>
+                    <td width="100px">
+                        <asp:FileUpload ID="FileUpload2" runat="server" /></td>
+                    <td width="72px">
+                        <asp:Button ID="btnSendEmail" runat="server" Text="Send Email" OnClick="btnSendEmail_Click" /></td>--%>
+                </tr>
+            </table>
+        </div>
+        <div style="padding: 10px;">
+            <asp:GridView ID="dgvRequests" runat="server" AutoGenerateColumns="False" OnPageIndexChanging="dgvRequests_PageIndexChanging"
+                EnableViewState="False" OnRowCreated="dgvRequests_RowCreated">
+                <Columns>
+                    <asp:BoundField DataField="Item" HeaderText="Item" SortExpression="Item">
+                        <%--<HeaderStyle Width="10px"></HeaderStyle>--%>
+                        <ItemStyle HorizontalAlign="Center" />
+                    </asp:BoundField>
+                    <asp:BoundField DataField="Name" HeaderText="Name" SortExpression="Name">
+                        <ItemStyle HorizontalAlign="Center" />
+                    </asp:BoundField>
+                    <asp:BoundField DataField="Workcell" HeaderText="Workcell/ROP" SortExpression="Workcell">
+                        <ItemStyle HorizontalAlign="Center" Wrap="false" />
+                    </asp:BoundField>
+                    <asp:BoundField DataField="EEID" HeaderText="EEID" SortExpression="EEID">
+                        <ItemStyle HorizontalAlign="Center" />
+                    </asp:BoundField>
+                    <asp:BoundField DataField="NTID" HeaderText="NTID" SortExpression="NTID">
+                        <ItemStyle HorizontalAlign="Center" />
+                    </asp:BoundField>
+                    <asp:BoundField DataField="OnBoardingDate" HeaderText="On Boarding Date" DataFormatString="{0:d}" SortExpression="OnBoardingDate">
+                        <ItemStyle HorizontalAlign="Center" />
+                    </asp:BoundField>
+                    <asp:BoundField DataField="Category" HeaderText="Category" SortExpression="Category"></asp:BoundField>
+                    <asp:BoundField DataField="SkillSN" HeaderText="Skill SN" SortExpression="SkillSN"></asp:BoundField>
+                    <asp:BoundField DataField="CertificateDate" HeaderText="Certificate Date" DataFormatString="{0:d}" SortExpression="CertificateDate">
+                        <ItemStyle HorizontalAlign="Center" />
+                    </asp:BoundField>
+                    <asp:BoundField DataField="1st_1" HeaderText="1st(Re-certificate)" DataFormatString="{0:d}" SortExpression="1st_1">
+                        <ItemStyle HorizontalAlign="Center" />
+                    </asp:BoundField>
+                    <asp:BoundField DataField="1st_2" HeaderText="1st(Re-certificate)" SortExpression="1st_2"></asp:BoundField>
+                    <asp:BoundField DataField="2nd_1" HeaderText="2nd(Re-certificate)" DataFormatString="{0:d}" SortExpression="2nd_1">
+                        <ItemStyle HorizontalAlign="Center" />
+                    </asp:BoundField>
+                    <asp:BoundField DataField="2nd_2" HeaderText="2nd(Re-certificate)" SortExpression="2nd_2"></asp:BoundField>
+                    <asp:BoundField DataField="3rd_1" HeaderText="3rd(Re-certificate)" DataFormatString="{0:d}" SortExpression="3rd_1">
+                        <ItemStyle HorizontalAlign="Center" />
+                    </asp:BoundField>
+                    <asp:BoundField DataField="3rd_2" HeaderText="3rd(Re-certificate)" SortExpression="3rd_2"></asp:BoundField>
+                    <asp:BoundField DataField="4th_1" HeaderText="4th(Re-certificate)" DataFormatString="{0:d}" SortExpression="4th_1">
+                        <ItemStyle HorizontalAlign="Center" />
+                    </asp:BoundField>
+                    <asp:BoundField DataField="4th_2" HeaderText="4th(Re-certificate)" SortExpression="4th_2"></asp:BoundField>
+                    <asp:BoundField DataField="5th_1" HeaderText="5th(Re-certificate)" DataFormatString="{0:d}" SortExpression="5th_1">
+                        <ItemStyle HorizontalAlign="Center" />
+                    </asp:BoundField>
+                    <asp:BoundField DataField="5th_2" HeaderText="5th(Re-certificate)" SortExpression="5th_2"></asp:BoundField>
+                    <asp:BoundField DataField="6th_1" HeaderText="6th(Re-certificate)" DataFormatString="{0:d}" SortExpression="6th_1">
+                        <ItemStyle HorizontalAlign="Center" />
+                    </asp:BoundField>
+                    <asp:BoundField DataField="6th_2" HeaderText="6th(Re-certificate)" SortExpression="6th_2"></asp:BoundField>
+                    <asp:BoundField DataField="7th_1" HeaderText="7th(Re-certificate)" DataFormatString="{0:d}" SortExpression="7th_1">
+                        <ItemStyle HorizontalAlign="Center" />
+                    </asp:BoundField>
+                    <asp:BoundField DataField="7th_2" HeaderText="7th(Re-certificate)" SortExpression="7th_2"></asp:BoundField>
+                    <asp:BoundField DataField="8th_1" HeaderText="8th(Re-certificate)" DataFormatString="{0:d}" SortExpression="8th_1">
+                        <ItemStyle HorizontalAlign="Center" />
+                    </asp:BoundField>
+                    <asp:BoundField DataField="8th_2" HeaderText="8th(Re-certificate)" SortExpression="8th_2"></asp:BoundField>
+                    <asp:BoundField DataField="9th_1" HeaderText="9th(Re-certificate)" DataFormatString="{0:d}" SortExpression="9th_1">
+                        <ItemStyle HorizontalAlign="Center" />
+                    </asp:BoundField>
+                    <asp:BoundField DataField="9th_2" HeaderText="9th(Re-certificate)" SortExpression="9th_2"></asp:BoundField>
+                    <asp:BoundField DataField="10th_1" HeaderText="10th(Re-certificate)" DataFormatString="{0:d}" SortExpression="10th_1">
+                        <ItemStyle HorizontalAlign="Center" />
+                    </asp:BoundField>
+                    <asp:BoundField DataField="10th_2" HeaderText="10th(Re-certificate)" SortExpression="10th_2"></asp:BoundField>
+                    <asp:BoundField DataField="11th_1" HeaderText="11th(Re-certificate)" DataFormatString="{0:d}" SortExpression="11th_1">
+                        <ItemStyle HorizontalAlign="Center" />
+                    </asp:BoundField>
+                    <asp:BoundField DataField="11th_2" HeaderText="11th(Re-certificate)" SortExpression="11th_2"></asp:BoundField>
+                    <asp:BoundField DataField="12th_1" HeaderText="12th(Re-certificate)" DataFormatString="{0:d}" SortExpression="12th_1">
+                        <ItemStyle HorizontalAlign="Center" />
+                    </asp:BoundField>
+                    <asp:BoundField DataField="12th_2" HeaderText="12th(Re-certificate)" SortExpression="12th_2"></asp:BoundField>
+                    <asp:BoundField DataField="IsSendEmail" HeaderText="是否发送邮件"></asp:BoundField>
+                </Columns>
+                <HeaderStyle BackColor="#006699" Font-Bold="True" ForeColor="White" CssClass="Freezing" />
+
+            </asp:GridView>
+        </div>
+    </form>
+</body>
+</html>

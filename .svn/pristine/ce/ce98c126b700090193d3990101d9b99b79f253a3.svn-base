@@ -1,0 +1,185 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
+using System.Web;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+
+namespace Certification
+{
+    public partial class Operation : System.Web.UI.Page
+    {
+        IList<OperationItemInfo> lstOperationItem;
+        IList<OperationStandardInfo> lstOperationStandard;
+        IList<OperationUserScoreInfo> lstOperationUserScore;
+
+
+        protected void Page_Load(object sender, EventArgs e)
+        {
+            if (!IsPostBack)
+                Bind();
+        }
+
+
+        void Bind()
+        {
+            string sql = "SELECT * FROM OperationStandard";
+            DataTable dt = DAL.SqlHelper.GetDataTableOfRecord(sql);
+            lstOperationStandard = Common.ModelConvertHelper<OperationStandardInfo>.ConvertToModel(dt);
+
+
+
+            sql = "SELECT * FROM OperationItem";
+            dt = DAL.SqlHelper.GetDataTableOfRecord(sql);
+            lstOperationItem = Common.ModelConvertHelper<OperationItemInfo>.ConvertToModel(dt);
+
+            rptOperation.DataSource = lstOperationItem.Where(s => s.OperationType == "实际操作").ToList();
+            rptOperation.DataBind();
+
+
+            sql = "SELECT * FROM OperationUserScore";
+            dt = DAL.SqlHelper.GetDataTableOfRecord(sql);
+            lstOperationUserScore = Common.ModelConvertHelper<OperationUserScoreInfo>.ConvertToModel(dt);
+
+        }
+
+        protected void rptOperation_ItemDataBound(object sender, RepeaterItemEventArgs e)
+        {
+            if (e.Item.ItemType == ListItemType.Item || e.Item.ItemType == ListItemType.AlternatingItem)
+            {
+                Repeater rep = e.Item.FindControl("rptOperationStandard") as Repeater;
+                OperationItemInfo rowv = (OperationItemInfo)e.Item.DataItem;
+                int typeid = Convert.ToInt32(rowv.ID);
+
+                rep.DataSource = lstOperationStandard.Where(s => s.OperationItemID == typeid).ToList();
+                rep.DataBind();
+            }
+        }
+    }
+
+    [Serializable]
+    public class OperationItemInfo
+    {
+        private int _id;
+        private string _operationitem;
+        private decimal _operationscore;
+        private string _operationtype;
+
+
+        public OperationItemInfo()
+        {
+
+        }
+
+        public int ID
+        {
+            get { return _id; }
+            set { _id = value; }
+        }
+        public string OperationItem
+        {
+            get { return _operationitem; }
+            set { _operationitem = value; }
+        }
+        public decimal OperationScore
+        {
+            get { return _operationscore; }
+            set { _operationscore = value; }
+        }
+        public string OperationType
+        {
+            get { return _operationtype; }
+            set { _operationtype = value; }
+        }
+
+    }
+
+    [Serializable]
+    public class OperationStandardInfo
+    {
+        private int _id;
+        private int _operationitemid;
+        private string _operationstandard;
+
+
+        public OperationStandardInfo()
+        {
+
+        }
+
+        public int ID
+        {
+            get { return _id; }
+            set { _id = value; }
+        }
+        public int OperationItemID
+        {
+            get { return _operationitemid; }
+            set { _operationitemid = value; }
+        }
+        public string OperationStandard
+        {
+            get { return _operationstandard; }
+            set { _operationstandard = value; }
+        }
+
+    }
+
+    [Serializable]
+    public class OperationUserScoreInfo
+    {
+        private int _id;
+        private int _operationrecordid;
+        private int _operationitemid;
+        private string _operationitem;
+        private decimal _operationitemscore;
+        private string _operationtype;
+        private decimal _operationuserscore;
+
+
+        public OperationUserScoreInfo()
+        {
+
+        }
+
+        public int ID
+        {
+            get { return _id; }
+            set { _id = value; }
+        }
+        public int OperationRecordID
+        {
+            get { return _operationrecordid; }
+            set { _operationrecordid = value; }
+        }
+        public int OperationItemID
+        {
+            get { return _operationitemid; }
+            set { _operationitemid = value; }
+        }
+        public string OperationItem
+        {
+            get { return _operationitem; }
+            set { _operationitem = value; }
+        }
+        public decimal OperationItemScore
+        {
+            get { return _operationitemscore; }
+            set { _operationitemscore = value; }
+        }
+        public string OperationType
+        {
+            get { return _operationtype; }
+            set { _operationtype = value; }
+        }
+        public decimal OperationUserScore
+        {
+            get { return _operationuserscore; }
+            set { _operationuserscore = value; }
+        }
+
+    }
+
+
+}

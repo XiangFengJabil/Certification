@@ -1,0 +1,30 @@
+﻿<?xml version="1.0"?>
+
+<!--
+  For more information on how to configure your ASP.NET application, please visit
+  http://go.microsoft.com/fwlink/?LinkId=169433
+  -->
+
+<configuration>
+  <system.web>
+    <customErrors mode="Off"/>
+    <compilation debug="true" targetFramework="4.0" />
+    <!--文件上传大小10M-->
+    <httpRuntime executionTimeout="3600" maxRequestLength="10240" />
+    <authentication mode="Windows"></authentication>
+  </system.web>
+  <appSettings>
+    <add key="LDAP" value="LDAP://corp.jabil.org"/>
+    <!--邮件配置-->
+    <add key="smtpClient" value="CORIMC04"/>
+    <add key="smtpPort" value="25"/>
+    <add key="address" value="PurchasingeForm@JABIL.COM"/>
+    <add key="displayname" value="Purchasing E-Form"/>
+    <add key="documentUrl" value="https://jabil-my.sharepoint.com/personal/ringgy_wang_jabil_com/_layouts/15/onedrive.aspx?id=/personal/ringgy_wang_jabil_com/Documents/E%20form%20forms 
+" />
+  </appSettings>
+  <connectionStrings>
+    <!--<add name="DBConnectionString" connectionString="Data Source=CNWUHNB063\SQLEXPRESS;Initial Catalog=HRT;Persist Security Info=True;User ID=sa;Password=1Autotask2;" providerName="System.Data.SqlClient"/>-->
+    <add name="DBConnectionString" connectionString="Data Source=CNWUHM0SQL81; Integrated Security=SSPI;Initial Catalog=HRT;" />
+  </connectionStrings>
+</configuration>

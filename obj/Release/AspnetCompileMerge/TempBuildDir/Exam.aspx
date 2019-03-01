@@ -1,0 +1,442 @@
+﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Exam.aspx.cs" Inherits="Certification.Exam" %>
+
+<%@ Register Src="~/Controls/Menu.ascx" TagPrefix="uc1" TagName="Menu" %>
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+    <title>ON-Line Exam System</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <link href="Styles/global.css" rel="stylesheet" type="text/css" />
+    <link href="Styles/Dialog.css" rel="stylesheet" />
+
+    <script src="Scripts/jquery-1.9.1.min.js"></script>
+
+    <style type="text/css">
+        .txt80 {
+            height: 24px;
+            width: 80px;
+        }
+
+        .divTable {
+            width: 99.6%;
+        }
+
+        .tableDefault {
+            margin: 4px;
+            padding: 4px;
+            border: 1px;
+            border-collapse: collapse;
+            word-break: keep-all;
+            white-space: normal;
+        }
+
+            .tableDefault tr th {
+                padding-top: 2px;
+                padding-bottom: 2px;
+                color: White;
+                background-color: #006699;
+                font-weight: bold;
+                border: 1px solid #A0A0A0;
+                text-align: left;
+                word-break: keep-all;
+                white-space: nowrap;
+            }
+
+            .tableDefault tr td {
+                border: 1px;
+                border: 1px solid #A0A0A0;
+                word-break: keep-all;
+                white-space: nowrap;
+            }
+
+        .imgExam {
+            width: 20px;
+            height: 20px;
+            text-align: center;
+            cursor: pointer;
+            margin-top: 2px;
+            margin-bottom: -2px;
+        }
+
+        .imgEdit {
+            width: 20px;
+            height: 20px;
+            text-align: center;
+            cursor: pointer;
+            margin-top: 2px;
+            margin-bottom: -2px;
+        }
+
+        .imgDelete {
+            width: 20px;
+            height: 20px;
+            text-align: center;
+            cursor: pointer;
+            margin-left: 6px;
+            margin-top: 2px;
+            margin-bottom: -2px;
+        }
+
+        .textAlignCenter {
+            text-align: center;
+        }
+
+        .txtUserRole {
+            text-align: center;
+        }
+
+        .divSearch {
+            padding-top: 4px;
+            padding-left: 4px;
+        }
+
+            .divSearch a {
+                margin-left: 20px;
+                color: #006699;
+            }
+
+        .mouseover {
+            background-color: gainsboro;
+        }
+
+        #divOperation {
+            width: 100%;
+            text-align: center;
+            margin: 10px auto 10px auto;
+        }
+
+            #divOperation input {
+                width: 80px;
+                height: 24px;
+                margin: auto 36px auto 36px;
+            }
+
+        .divSkill {
+            margin-top: 10px;
+            margin-bottom: 16px;
+            height: 24px;
+        }
+
+            .divSkill span {
+                margin-left: 10px;
+                width: 60px;
+                display: inline-block;
+            }
+
+            .divSkill input {
+                height: 20px;
+                width: 80%;
+            }
+
+        .tbHistory {
+            border-width: 1px;
+            text-align: center;
+        }
+
+        .tdOperationLog {
+            font-weight: normal;
+            color: dimgray;
+        }
+
+        .closeOpera {
+            width: 60px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            text-decoration: underline;
+        }
+
+            .closeOpera:hover {
+                color: #CC3300;
+                text-decoration: underline;
+            }
+
+        #divExamHistory {
+            width: 300px;
+            max-height: 450px;
+            z-index: 99999;
+            position: absolute;
+            background-color: goldenrod;
+            overflow-x: auto;
+            overflow-y: auto;
+            margin-left: 16px;
+            padding: 4px;
+            border-radius: 6px;
+        }
+    </style>
+
+    <script type="text/javascript">
+        $(function () {
+            $("#nav ul > li").eq(2).addClass("active").siblings().removeClass("active");
+            $("#closeOpera").click(function () { $("#divExamHistory").hide("fast"); });
+
+            //考试记录
+            $('#aExamHistory').click(function (event) {
+                var e = arguments.callee.caller.arguments[0] || event;
+                if (e && e.stopPropagation) {
+                    $('#divExamHistory').show("slow");
+                    e.stopPropagation();
+                } else if (window.event) {
+                    $('#divExamHistory').show("slow");
+                    window.event.cancelBubble = true;
+                }
+            });
+
+            //操作记录
+            $("#aHandleHistory").click(function () {
+                window.location.href = "History.aspx?handle=Skill";
+            });
+
+            $("#tabCartification tr").mousemove(
+                function () {
+                    $(this).addClass("mouseover");
+                }
+            ).mouseout(function () {
+                $(this).removeClass("mouseover");
+            });
+
+            $("#btnCancel,#close").click(function () {
+                $("#mask").hide();
+                $("#login").hide();
+            });
+
+            $("#tbodyList>tr").dblclick(function () {
+                var skillSN = $(this).children("td:eq(1)").html();
+                $("#iptHandle").val(3);
+                $.post("Exam.aspx", { iptHandle: "3", SKillSN: skillSN },
+                    function (data) {
+                        $(data).each(function (i, e) {
+                            $("#iptSkillSN").val(e.SkillSn);
+                            $("#iptSkillDescription").val(e.SkillDescription);
+                        });
+
+                    }, "json");
+
+                AddOrUpdate();
+            });
+
+            //考试事件
+            $(".imgExam").click(function () {
+                var skillSn = $(this).parent().siblings("td").eq(1).html();
+
+                window.location.href = "ExamOline.aspx?id=" + $.trim(skillSn);
+
+            });
+
+            //0添加
+            $("#aAddCertification").click(function () {
+                $("#iptHandle").val(0);
+                AddOrUpdate();
+
+            });
+
+            //1修改
+            $(".imgEdit").click(function () {
+                var oldSkillSn = $(this).parent().siblings("td").eq(1).html();
+                $("#oldSkillSN").val(oldSkillSn);
+                $.ajaxSettings.async = false;
+                $.post("Exam.aspx", { iptHandle: "3", SKillSN: oldSkillSn },
+                    function (data) {
+                        $(data).each(function (i, e) {
+                            $("#iptSkillSN").val(e.SkillSn);
+                            $("#iptSkillDescription").val(e.SkillDescription);
+                        });
+
+                    }, "json");
+
+                $("#iptHandle").val(1);
+                AddOrUpdate();
+
+            });
+
+            //2删除
+            $(".imgDelete").click(function () {
+                var skillSn = $.trim($(this).parent().siblings("td").eq(1).html());
+                if (!confirm("您确定删除 【" + skillSn + "】 该证书吗？ 【" + $.trim(skillSn) + "】 证书下的考题将会一并删除。"))
+                    return;
+                else {
+                    //$(this).parents("tr").remove();
+                    var tr = $(this).parents("tr");
+
+                    $.post("Exam.aspx", { iptHandle: "2", SKillSN: skillSn },
+                        function (data) {
+                            if (data == "0") {
+                                alert("出错了，删除失败！");
+                            }
+                            else {
+                                alert("删除成功！");
+                                $(tr).remove();
+                            }
+                        });
+
+                }
+            });
+
+            //保存。增加、修改共用一个事件，修改的时候需要原来的SkillSN
+            $("#btnSave").click(function () {
+                var handel = $("#iptHandle").val();
+                var skillSN = $("#iptSkillSN").val();
+                var oldSkillSN = $("#oldSkillSN").val();
+
+                var skillDescription = $("#iptSkillDescription").val();
+
+                if (skillSN == "") { $("#iptSkillSN").focus(); return; }
+
+                $.ajaxSettings.async = false;
+                $.post("Exam.aspx", { SKillSN: skillSN, OldSkillSN: oldSkillSN, SkillDescription: skillDescription, iptHandle: handel },
+                    function (data) {
+                        if (data == "0") {
+                            if (handel == "0")
+                                alert("出错了，添加失败！");
+                            else
+                                alert("出错了，修改失败！");
+                        } else {
+                            if (handel == "0")
+                                alert("添加成功！");
+                            else
+                                alert("修改成功！");
+                            window.location.href = "Exam.aspx";
+                        }
+                    });
+            });
+
+
+        });
+
+        function AddOrUpdate() {
+            var handel = $("#iptHandle").val();
+            $("#divOperation").show();
+            if (handel == "0") {
+                $("#iptSkillSN").val("")
+                $("#iptSkillDescription").val("")
+                $("#dialogTitle").html("添加证书");
+                $("#iptSkillSN").attr("disabled", false);
+                $("#iptSkillDescription").attr("disabled", false);
+            } else if ((handel == "1")) {
+                $("#dialogTitle").html("修改证书");
+                $("#iptSkillSN").attr("disabled", false);
+                $("#iptSkillDescription").attr("disabled", false);
+            }
+            else {
+                $("#dialogTitle").html("查看证书");
+                $("#iptSkillSN").attr("disabled", true);
+                $("#iptSkillDescription").attr("disabled", true);
+                $("#divOperation").hide();
+            }
+            $("#mask").show();
+            $("#login").show();
+        }
+
+    </script>
+
+</head>
+<body>
+
+    <div id="mask"></div>
+    <div id="login">
+        <input type="hidden" id="iptHandle" name="iptHandle" value="" />
+        <input type="hidden" id="oldSkillSN" />
+        <div id="divQR" style="padding: 4px;">
+            <span id="close" title="close">X</span>
+            <h2 id="dialogTitle" style="margin-left: 6px; height: 32px; display: inline-block; *display: inline; zoom: 1;">Info</h2>
+
+            <div class="divSkill">
+                <span>证书SN：</span><input id="iptSkillSN" type="text" maxlength="50" />
+                <label style="color: red">*</label>
+            </div>
+            <div class="divSkill"><span>证书描述：</span><input id="iptSkillDescription" type="text" maxlength="500" /></div>
+
+            <div id="divOperation">
+                <input type="button" id="btnSave" value="保存" />
+                <input type="button" id="btnCancel" value="取消" />
+            </div>
+        </div>
+    </div>
+
+    <uc1:Menu runat="server" ID="Menu" />
+    <div id="divMain">
+
+        <div class="divSearch">
+            <form runat="server">
+                <a href="javascript:;" title="只显示最后考试20次的记录" style="color: orange;" id="aExamHistory">考试记录</a>
+                <%= userRole == 1?"<a id='aAddCertification' class='txtUserRole' href='javascript:;'>添加证书</a>":"" %>
+                <%= userRole == 1?" <a class='txtUserRole' href='ExamQuestionManage.aspx'>题库管理</a>":"" %>
+                <%= userRole == 1?"<a href='javascript:;' style='color: red;' id='aHandleHistory'>操作记录</a>":"" %>
+
+                <div id="divExamHistory" style="display: none;">
+                    <table class="tbHistory">
+                        <tr>
+                            <th>证书SN</th>
+                            <th>得分</th>
+                            <th>考试时间</th>
+                        </tr>
+                        <asp:Repeater ID="rptExamHistory" runat="server">
+                            <ItemTemplate>
+                                <tr>
+                                    <td><%# Eval("SkillSn") %></td>
+                                    <td><%# Eval("SUMSCORE") %></td>
+                                    <td><%# Convert.ToDateTime(Eval("ExamDate")).ToString("yyyy-MM-dd") %></td>
+                                    <td><a href='ExamResultDetail.aspx?ExamDate=<%# Convert.ToDateTime(Eval("ExamDate")).ToString("yyyy-MM-dd") %>&skillsn=<%# Eval("SkillSn") %>'>详情</a></td>
+                                </tr>
+                            </ItemTemplate>
+                        </asp:Repeater>
+                    </table>
+                    <label id="closeOpera" class="closeOpera">关闭</label>
+                </div>
+
+                <div>
+                    <span style="color: red; float: right; margin-right: 10px;">注意：修改或删除证书，会连同考题一起修改或删除，请谨慎操作。</span>
+
+                    <span style="margin-right: 20px; float: right; display: inline; color: #005288;">共有：<%=countActiveSkillSN %>个证书，已删除了<%=countDelSkillSN %>个证书(不计入证书中)。</span>
+
+                    <span>SkillSN :</span>
+                    <asp:TextBox runat="server" ID="txtSkillSN" Width="100" Height="18"></asp:TextBox>
+                    <asp:Button runat="server" ID="btnSearch" Text=" 查 询 " Height="20" OnClick="btnSearch_Click" />
+
+                </div>
+            </form>
+
+        </div>
+        <div class="divTable">
+            <table id="tabCartification" class="tableDefault" cellpadding="0" border="0">
+                <tr>
+                    <th>序号</th>
+                    <th>证书名称</th>
+                    <th>证书描述</th>
+                    <th style="width: 60px;">题数</th>
+                    <th style="width: 60px;">总分数</th>
+                    <th style="width: 60px;">考试</th>
+                    <%= userRole == 1?"<th style='width: 100px; text-align: center;' class='txtUserRole'>操作</th>":"" %>
+                </tr>
+                <tbody id="tbodyList">
+                    <asp:Repeater runat="server" ID="rptSkill">
+                        <ItemTemplate>
+                            <tr>
+                                <td><%# Container.ItemIndex+1 %></td>
+                                <td>
+                                    <%# Eval("SkillSn") %>
+                                </td>
+                                <td>
+                                    <%# Eval("SkillDescription") %>
+                                </td>
+                                <td><%# Eval("QCOUNT") %></td>
+                                <td><%# Eval("QSUM") %></td>
+                                <td class="textAlignCenter">
+                                    <img title='Exam <%# Eval("SkillSn") %>' class="imgExam" src="images/exam_487px_625.png" />
+                                </td>
+
+                                <%# userRole == 1 ? "<td class='txtUserRole'> <img title='Edit " + Eval("SkillSn") + "' class='imgEdit' src='images/exam_edit_48_48.png' /><img title='Delete " + Eval("SkillSn") + "' class='imgDelete' src='images/exam_delete_24_24.png' /></td>" : "" %>
+                            </tr>
+                        </ItemTemplate>
+                    </asp:Repeater>
+                </tbody>
+            </table>
+        </div>
+
+
+    </div>
+
+
+</body>
+</html>

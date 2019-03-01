@@ -1,0 +1,197 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
+using System.Web;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+using Certification.BLL;
+using System.Web.UI.HtmlControls;
+using System.IO;
+using System.Data.OleDb;
+
+namespace Certification
+{
+    public partial class RequestList : System.Web.UI.Page
+    {
+        protected void Page_Load(object sender, EventArgs e)
+        {
+            if (IsPostBack) return;
+
+            int act = Convert.ToInt32(Request.QueryString["act"]);
+            Model.UserInfo user = BLL.OrgMgr.GetCurrentAdUser();
+
+            if (user.UID != "1518819" || user.UID == "1258504" || user.UID == "1189648 ")
+            {
+                FileUpload1.Visible = false;
+                btnUploadExcel.Visible = false;
+            }
+
+            switch (act)
+            {
+                case 1:
+                    this.lbLocationTag.Text = "Home >> My List";
+                    ViewState["table"] = RequestMgr.GetRequestsByUID(user.UID);
+                    this.divFilter.Visible = false;
+                    this.dgvRequests.DataSource = ViewState["table"];
+                    this.dgvRequests.DataBind();
+                    break;
+                case 3:
+                    this.lbLocationTag.Text = "Home >> All List";
+                    ViewState["table"] = RequestMgr.GetAllRequests();
+                    this.dgvRequests.DataSource = ViewState["table"];
+                    this.dgvRequests.DataBind();
+                    //GroupRows(dgvRequests, 1);
+                    LoadControl();
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        private void LoadControl()
+        {
+            //this.ddlSites.DataSource = BLL.OrgMgr.GetSiteList();
+            //this.ddlSites.DataTextField = "value";
+            //this.ddlSites.DataValueField = "key";
+            //this.ddlSites.DataBind();
+            //this.ddlSites.SelectedValue = Util.Common.GetSiteId().ToString();
+
+            //this.ddlForms.DataSource = BLL.OrgMgr.GetForms(Convert.ToInt32(ddlSites.SelectedValue));
+            //this.ddlForms.DataTextField = "value";
+            //this.ddlForms.DataValueField = "key";
+            //this.ddlForms.DataBind();
+            //this.ddlForms.Items.Insert(0, new ListItem("N / A", "0"));
+
+            //this.ddlStatus.DataSource = BLL.WorkflowMgr.GetRequestStatusList();
+            //this.ddlStatus.DataTextField = "value";
+            //this.ddlStatus.DataValueField = "key";
+            //this.ddlStatus.DataBind();
+            //this.ddlStatus.Items.Insert(0, new ListItem("All", "All"));
+        }
+
+        protected void dgvRequests_PageIndexChanging(object sender, GridViewPageEventArgs e)
+        {
+            dgvRequests.PageIndex = e.NewPageIndex;
+            this.dgvRequests.DataSource = ViewState["table"];
+            this.dgvRequests.DataBind();
+        }
+
+        protected void btnSubmit_Click(object sender, EventArgs e)
+        {
+            //string site = this.ddlSites.SelectedValue;
+            //string form = this.ddlForms.SelectedValue;
+            //string status = this.ddlStatus.SelectedValue;
+            string item = this.ddlItems.SelectedValue;
+            string text = this.txtItem.Text.Trim();
+
+            //string date = this.ddlDate.SelectedValue;
+            //string startDate = this.txtStartDate.Text.Trim();
+            //string endDate = this.txtEndDate.Text.Trim();
+
+            DataTable table = RequestMgr.GetAllRequestsByFilter(item, text);
+            //DataTable table = RequestMgr.GetAllRequestsByFilter(item, text, date, startDate, endDate);
+            this.dgvRequests.DataSource = table;
+            this.dgvRequests.DataBind();
+            ViewState["table"] = table;
+        }
+
+        protected void dgvRequests_RowCreated(object sender, GridViewRowEventArgs e)
+        {
+            if (e.Row.RowType == DataControlRowType.Header)
+            {
+                //TableCellCollection tcHeader = e.Row.Cells;
+                //tcHeader.Clear();//原有表头清空
+            }
+        }
+
+        protected void btnUploadExcel_Click(object sender, EventArgs e)
+        {
+            //上传excel文件
+            string road = "";
+            #region 文件上传
+            try
+            {
+                //全名
+                string excelFile = this.FileUpload1.PostedFile.FileName;
+                //获取文件名（不包括扩展名）
+                string fileName = Path.GetFileNameWithoutExtension(FileUpload1.PostedFile.FileName);
+                //扩展名
+                string extentionName = excelFile.Substring(excelFile.LastIndexOf(".") + 1).ToLower();
+                if (fileName == "" || fileName == null)
+                {
+                    Response.Write("<script>alert('Select Excel File！')</script>");
+                    return;
+                }
+                if (extentionName != "xls" && extentionName != "xlsx")
+                {
+                    Response.Write("<script>alert('Not an Excel file！')</script>");
+                    return;
+                }
+                //浏览器安全性限制 无法直接获取客户端文件的真实路径，将文件上传到服务器端 然后获取文件源路径
+
+                #region 设置上传路径将文件保存到服务器
+                string dateTime = DateTime.Now.Date.ToString("yyyyMMdd");
+                string time = DateTime.Now.ToShortTimeString().Replace(":", "");
+                string newFileName = dateTime + time + DateTime.Now.Millisecond.ToString() + ".xls";
+                //TempExcel是自己创建的文件夹  位置随意   合理即可
+                road = Server.MapPath("./uploads/TempExcel") + "\\" + newFileName;
+                this.FileUpload1.PostedFile.SaveAs(road);
+                //Response.Write("<script>alert('已经上传到服务器文件夹')</script>");
+                #endregion
+
+            }
+            catch
+            {
+                Response.Write("<script>alert('Data upload failed, please re-import')</script>");
+                return;
+            }
+            #endregion
+
+
+            #region 数据导入到数据库中
+            try
+            {
+                //将Excel文件转成Datatable
+                DataTable dtExcel = Common.UploadExcelFileBiz.GetExcelDatatable(road);
+                //将Dtatable的列名与数据库的列名保持一致
+                int errorRow = 0;
+                dtExcel = Common.UploadExcelFileBiz.ModifyColumnsForCertificationTable(dtExcel, out errorRow);
+                if (errorRow != 0)
+                {
+                    Response.Write("<script>alert('Error, Import data failed！ Error Data Line " + errorRow + "')</script>");
+                    return;
+                }
+
+                //将Excel内容插入到数据库中
+                int iRows = Common.UploadExcelFileBiz.WriteIntoDataBase(dtExcel, "Certification");
+                if (iRows > 0)
+                {
+                    Response.Write("<script>alert('Import data success！')</script>");
+                }
+                else
+                {
+                    Response.Write("<script>alert('Error, Import data failed！')</script>");
+                }
+            }
+            catch
+            {
+                Response.Write("<script>alert('Import data failed！')</script>");
+                return;
+            }
+            #endregion
+        }
+
+
+        //protected void ddlSites_SelectedIndexChanged(object sender, EventArgs e)
+        //{
+        //    if (ddlSites.SelectedIndex == -1) return;
+
+        //    this.ddlForms.DataSource = BLL.OrgMgr.GetForms(Convert.ToInt32(ddlSites.SelectedValue));
+        //    this.ddlForms.DataTextField = "value";
+        //    this.ddlForms.DataValueField = "key";
+        //    this.ddlForms.DataBind();
+        //    this.ddlForms.Items.Insert(0, new ListItem("N / A", "0"));
+        //}
+    }
+}

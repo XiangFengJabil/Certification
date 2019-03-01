@@ -1,0 +1,112 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
+using System.Web;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+using Certification.BLL;
+using System.Web.UI.HtmlControls;
+
+namespace Certification
+{
+    public partial class RequestList : System.Web.UI.Page
+    {
+        protected void Page_Load(object sender, EventArgs e)
+        {
+            if (IsPostBack) return;
+
+            int act = Convert.ToInt32(Request.QueryString["act"]);
+            Model.UserInfo user = BLL.OrgMgr.GetCurrentAdUser();
+            switch (act)
+            {
+                case 1:
+                    this.lbLocationTag.Text = "Home >> My List";
+                    ViewState["table"] = RequestMgr.GetRequestsByUID(user.UID);
+                    this.divFilter.Visible = false;
+                    this.dgvRequests.DataSource = ViewState["table"];
+                    this.dgvRequests.DataBind();
+                    break;
+                case 3:
+                    this.lbLocationTag.Text = "Home >> All List";
+                    ViewState["table"] = RequestMgr.GetAllRequests();
+                    this.dgvRequests.DataSource = ViewState["table"];
+                    this.dgvRequests.DataBind();
+                    //GroupRows(dgvRequests, 1);
+                    LoadControl();
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        private void LoadControl()
+        {
+            //this.ddlSites.DataSource = BLL.OrgMgr.GetSiteList();
+            //this.ddlSites.DataTextField = "value";
+            //this.ddlSites.DataValueField = "key";
+            //this.ddlSites.DataBind();
+            //this.ddlSites.SelectedValue = Util.Common.GetSiteId().ToString();
+
+            //this.ddlForms.DataSource = BLL.OrgMgr.GetForms(Convert.ToInt32(ddlSites.SelectedValue));
+            //this.ddlForms.DataTextField = "value";
+            //this.ddlForms.DataValueField = "key";
+            //this.ddlForms.DataBind();
+            //this.ddlForms.Items.Insert(0, new ListItem("N / A", "0"));
+
+            //this.ddlStatus.DataSource = BLL.WorkflowMgr.GetRequestStatusList();
+            //this.ddlStatus.DataTextField = "value";
+            //this.ddlStatus.DataValueField = "key";
+            //this.ddlStatus.DataBind();
+            //this.ddlStatus.Items.Insert(0, new ListItem("All", "All"));
+        }
+
+        protected void dgvRequests_PageIndexChanging(object sender, GridViewPageEventArgs e)
+        {
+            dgvRequests.PageIndex = e.NewPageIndex;
+            this.dgvRequests.DataSource = ViewState["table"];
+            this.dgvRequests.DataBind();
+        }
+
+        protected void btnSubmit_Click(object sender, EventArgs e)
+        {
+            //string site = this.ddlSites.SelectedValue;
+            //string form = this.ddlForms.SelectedValue;
+            //string status = this.ddlStatus.SelectedValue;
+            string item = this.ddlItems.SelectedValue;
+            string text = this.txtItem.Text.Trim();
+
+            //string date = this.ddlDate.SelectedValue;
+            //string startDate = this.txtStartDate.Text.Trim();
+            //string endDate = this.txtEndDate.Text.Trim();
+
+            DataTable table = RequestMgr.GetAllRequestsByFilter(item, text);
+            //DataTable table = RequestMgr.GetAllRequestsByFilter(item, text, date, startDate, endDate);
+            this.dgvRequests.DataSource = table;
+            this.dgvRequests.DataBind();
+            ViewState["table"] = table;
+        }
+
+        protected void dgvRequests_RowCreated(object sender, GridViewRowEventArgs e)
+        {
+            if (e.Row.RowType == DataControlRowType.Header)
+            {
+                //TableCellCollection tcHeader = e.Row.Cells;
+                //tcHeader.Clear();//原有表头清空
+            }
+        }
+
+
+        //protected void ddlSites_SelectedIndexChanged(object sender, EventArgs e)
+        //{
+        //    if (ddlSites.SelectedIndex == -1) return;
+
+        //    this.ddlForms.DataSource = BLL.OrgMgr.GetForms(Convert.ToInt32(ddlSites.SelectedValue));
+        //    this.ddlForms.DataTextField = "value";
+        //    this.ddlForms.DataValueField = "key";
+        //    this.ddlForms.DataBind();
+        //    this.ddlForms.Items.Insert(0, new ListItem("N / A", "0"));
+        //}
+
+    }
+}

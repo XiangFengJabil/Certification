@@ -1,0 +1,131 @@
+﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="OperationManage.aspx.cs" Inherits="Certification.OperationManage" %>
+
+<%@ Register Src="~/Controls/Menu.ascx" TagPrefix="uc1" TagName="Menu" %>
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+    <title>实操信息管理</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+
+    <link href="Styles/global.css" rel="stylesheet" />
+
+    <script src="Scripts/jquery-1.9.1.min.js"></script>
+
+    <style>
+        .divTable {
+            width: 99.6%;
+        }
+
+        .tableDefault {
+            margin: 4px;
+            padding: 4px;
+            border: 1px;
+            border-collapse: collapse;
+            word-break: keep-all;
+            white-space: normal;
+        }
+
+            .tableDefault tr th {
+                padding-top: 2px;
+                padding-bottom: 2px;
+                color: White;
+                background-color: #006699;
+                font-weight: bold;
+                border: 1px solid #A0A0A0;
+                text-align: left;
+                word-break: keep-all;
+                white-space: nowrap;
+            }
+
+            .tableDefault tr td {
+                border: 1px;
+                padding: 2px;
+                border: 1px solid #A0A0A0;
+                word-break: keep-all;
+                white-space: nowrap;
+            }
+
+        .mouseover {
+            background-color: gainsboro;
+        }
+
+        .imgEdit {
+            width: 20px;
+            height: 20px;
+            text-align: center;
+            cursor: pointer;
+            margin-top: 2px;
+            margin-bottom: -2px;
+        }
+    </style>
+
+
+    <script>
+        $(function () {
+
+            $(".tableDefault tr").mousemove(
+                function () {
+                    $(this).addClass("mouseover");
+                }
+            ).mouseout(function () {
+                $(this).removeClass("mouseover");
+            });
+
+            $("#nav ul > li").eq(4).addClass("active").siblings().removeClass("active");
+
+
+            $("#tbody > td").click(function () {
+
+            });
+
+        });
+    </script>
+
+</head>
+<body>
+    <uc1:Menu runat="server" ID="Menu" />
+    <div style="padding: 4px;">
+        <form runat="server">
+            <asp:DropDownList ID="ddlOpeartionType" Height="20" runat="server" AutoPostBack="true" OnSelectedIndexChanged="ddlOpeartionType_SelectedIndexChanged">
+                <asp:ListItem>ALL</asp:ListItem>
+                <asp:ListItem>实际操作</asp:ListItem>
+                <asp:ListItem>精益分</asp:ListItem>
+                <asp:ListItem>其它</asp:ListItem>
+            </asp:DropDownList>
+        </form>
+    </div>
+
+    <div class="divTable">
+        <table class="tableDefault" cellpadding="0" border="0">
+            <tr>
+                <th>序号</th>
+                <th>考核项目</th>
+                <th>具体内容</th>
+                <th>评分标准(条数)</th>
+                <th>分数</th>
+                <th style="text-align: center;">操作</th>
+            </tr>
+            <tbody id="tbody">
+                <asp:Repeater runat="server" ID="rptOperationManage">
+                    <ItemTemplate>
+                        <tr>
+                            <td><%# Container.ItemIndex+1 %></td>
+                            <td><%# Eval("OperationType") %></td>
+                            <td><%# Eval("OperationItem") %></td>
+                            <td><%# Eval("COUNTITEM") %></td>
+                            <td><%# Eval("OperationScore") %></td>
+                            <td style="text-align: center; width:100px;" >
+                                <img title='Edit <%# Eval("ID") %>' class="imgEdit" src="images/exam_edit_48_48.png" />
+                                <img title='Delete <%# Eval("ID") %>' class="imgEdit" src="images/exam_delete_24_24.png" />
+                            </td>
+                        </tr>
+                    </ItemTemplate>
+                </asp:Repeater>
+            </tbody>
+        </table>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,101 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
+using System.Web;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+
+namespace Certification
+{
+    public partial class OperationRecord : System.Web.UI.Page
+    {
+        Model.UserInfo user;
+        public int userRole = 0;
+
+        protected void Page_Load(object sender, EventArgs e)
+        {
+            if (!IsPostBack)
+                BindData("", true);
+        }
+
+        void BindData(string strDDLStr, bool isBindDDL)
+        {
+            UserRoleControl();
+
+            string sql = "SELECT * FROM OperationRecord ORDER BY CreateDate DESC";
+            if (!string.IsNullOrEmpty(txtUserName.Text.Trim()))
+                sql = string.Format("SELECT * FROM OperationRecord WHERE DisplayName = N'{0}'  ORDER BY CreateDate DESC", txtUserName.Text.Trim());
+
+            if (!string.IsNullOrEmpty(strDDLStr) && strDDLStr != "ALL")
+                sql = string.Format("SELECT * FROM OperationRecord WHERE SkillSn = N'{0}' ORDER BY CreateDate DESC", strDDLStr);
+
+
+            DataTable dt = DAL.SqlHelper.GetDataTableOfRecord(sql);
+            rptOperationItem.DataSource = dt;
+            rptOperationItem.DataBind();
+
+            if (isBindDDL)
+            {
+                sql = "SELECT DISTINCT SkillSn FROM OperationRecord";
+                dt = DAL.SqlHelper.GetDataTableOfRecord(sql);
+
+                ddlSkillSN.DataSource = dt;
+                ddlSkillSN.DataTextField = "SkillSn";
+                ddlSkillSN.DataValueField = "SkillSn";
+                ddlSkillSN.DataBind();
+
+                ddlSkillSN.Items.Insert(0, new ListItem("ALL(SkillSN)", "ALL"));
+                if (string.IsNullOrEmpty(strDDLStr))
+                    ddlSkillSN.SelectedIndex = 0;
+                else
+                    ddlSkillSN.SelectedValue = strDDLStr;
+
+            }
+
+        }
+
+
+        /// <summary>
+        /// 权限
+        /// </summary>
+        void UserRoleControl()
+        {
+            user = BLL.OrgMgr.GetCurrentAdUser();
+
+            string sqlUser = "SELECT * FROM [Admin] WHERE NTID = '" + user.UID + "'";
+            DataTable dtUser = DAL.SqlHelper.GetDataTableOfRecord(sqlUser);
+            //user.UID == "1518819" || user.UID == "1258504" || user.UID == "xuh4"
+            if (dtUser != null && dtUser.Rows.Count > 0)
+            {
+                userRole = dtUser.Rows.Count;
+            }
+        }
+
+
+        public string OutHtmlTd(object objID, object objIsApproved)
+        {
+            string str = "";
+            if (userRole == 1)
+            {
+                if (string.IsNullOrEmpty(objIsApproved.ToString()) || objIsApproved.ToString() == "0")
+                    str = "<td><a style='color: #006699;' href='Operation.aspx?id=" + objID.ToString() + "'>评分</a></td>";
+                else
+                    str = "<td>已评分</td>";
+            }
+            return str;
+        }
+
+        protected void btnSearch_Click(object sender, EventArgs e)
+        {
+            BindData("", true);
+        }
+
+        protected void ddlSkillSN_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            DropDownList ddl = sender as DropDownList;
+            string str = ddl.SelectedValue;
+            BindData(str, false);
+        }
+    }
+}

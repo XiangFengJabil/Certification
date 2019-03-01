@@ -1,0 +1,40 @@
+﻿body {
+}
+
+/*==== FileUpload  ====*/
+.txtFile {
+    height: 18px;
+    width: 98%;
+    padding: 3px 1px;
+    border: 1px solid #ccc;
+    border-top-color: #999;
+    border-left-color: #999;
+    background-color: #fff
+}
+    /*== FileUpload hover ==*/
+    .txtFile:hover {
+        background-color: #f5fdf1
+    }
+
+
+/*==== button ====*/
+.rbtn23 {
+    cursor: pointer
+}
+
+.rbtn23 {
+    border: none
+}
+
+.rbtn23 {
+    height: 23px
+}
+
+.rbtn23 {
+    width: 75px;
+    background: url(images/sprites_btn23.png) no-repeat 0 -240px
+}
+    /*== button hover ==*/
+    .rbtn23:hover {
+        background-position: 0 -264px
+    }

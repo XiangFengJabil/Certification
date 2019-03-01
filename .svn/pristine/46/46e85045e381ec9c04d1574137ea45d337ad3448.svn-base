@@ -1,0 +1,34 @@
+﻿<%@ Control Language="C#" AutoEventWireup="true" CodeBehind="Menu.ascx.cs" Inherits="Certification.Controls.Menu" %>
+<div id="Header">
+    <hr id="topHR" />
+    <div id="logoDiv">
+        <a href="http://jabilweb.corp.jabil.org/" style="cursor: pointer; float: left">
+            <img src="images/jabil_log.jpg" style="width: 179px; height: 48px; border: none" alt="JABIL" />
+        </a><%--<span style="float: right; position:relative;top:20px; margin-right: 350px; display: block; font-family: Tahoma; font-style: normal; font-size: 11px;">v 1.0</span><span id="appName">Certification List</span>--%>
+        
+        <span  style="float: left; position:relative;top:0px; margin-left: 1400px; display: block; font-family: Tahoma; font-style: normal; " id="appName">Certification List</span>
+        <span style="float: left; position:relative;top:0px; margin-top:22px; display: block; font-family: Tahoma; font-style: normal; font-size: 11px;">v 1.0</span>
+        <div style="clear: both">
+
+        </div>
+    </div>
+    <div id="nav">
+        <ul>
+          <%--  <li><a href="Request.aspx">New Request</a></li>
+            <li><a href="RequestList.aspx?act=1">My Request</a></li>
+            <li><a href="Tasks.aspx">My Task</a></li>--%>
+            <li><a href="RequestList.aspx?act=3">All List</a></li>
+            <%--<li><a href="#">Manage</a>
+                <div class="clear"></div>
+                <ul>
+                    <li><a href="TaskerChange.aspx">Task Change</a></li>
+                </ul>
+            </li>--%>
+            <%--<li><asp:HyperLink ID="HyperLink1" runat="server">Document</asp:HyperLink>
+            </li>--%>
+        </ul>
+        <%--<asp:Label ID="lbUser" style="float: left; position:relative;top:0px; margin-left: 1000px; display: block; font-family: Tahoma; font-style: normal; font-size: 11px;" CssClass="userInfo" runat="server"></asp:Label>--%>
+        <asp:Label ID="lbUser" style="float: left; position:relative;top:0px; margin-left: 1710px; display: block; font-family: Tahoma; font-style: normal; font-size: 11px;" CssClass="userInfo" runat="server"></asp:Label>
+
+    </div>
+</div>

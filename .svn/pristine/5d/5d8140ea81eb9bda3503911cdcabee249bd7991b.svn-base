@@ -1,0 +1,370 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Data;
+using System.IO;
+using System.Linq;
+using System.Web;
+
+using NPOI.HSSF.UserModel;
+using NPOI.SS.UserModel;
+using NPOI.XSSF.UserModel;
+
+
+namespace Certification.Common
+{
+    public class NPOIHelper
+    {
+
+
+
+        /// <summary>
+        /// Excel导入成Datable
+        /// </summary>
+        /// <param name="file">导入路径(包含文件名与扩展名)</param>
+        /// <returns></returns>
+        public static DataTable ExcelToTable(string file)
+        {
+            DataTable dt = new DataTable();
+            IWorkbook workbook;
+            string fileExt = Path.GetExtension(file).ToLower();
+            using (FileStream fs = new FileStream(file, FileMode.Open, FileAccess.Read))
+            {
+                //XSSFWorkbook 适用XLSX格式，HSSFWorkbook 适用XLS格式
+                if (fileExt == ".xlsx") { workbook = new XSSFWorkbook(fs); } else if (fileExt == ".xls") { workbook = new HSSFWorkbook(fs); } else { workbook = null; }
+                if (workbook == null) { return null; }
+                NPOI.SS.UserModel.ISheet sheet = workbook.GetSheetAt(0);
+
+
+                //表头  
+                IRow header = sheet.GetRow(sheet.FirstRowNum);
+                List<int> columns = new List<int>();
+                for (int i = 0; i < header.LastCellNum; i++)
+                {
+                    object obj = GetValueType(header.GetCell(i));
+                    if (obj == null || obj.ToString() == string.Empty)
+                    {
+                        dt.Columns.Add(new DataColumn("Columns" + i.ToString()));
+                    }
+                    else
+                        dt.Columns.Add(new DataColumn(obj.ToString()));
+                    columns.Add(i);
+                }
+                //数据  
+                for (int i = sheet.FirstRowNum + 1; i <= sheet.LastRowNum; i++)
+                {
+                    DataRow dr = dt.NewRow();
+                    bool hasValue = false;
+                    foreach (int j in columns)
+                    {
+                        dr[j] = GetValueType(sheet.GetRow(i).GetCell(j));
+                        if (dr[j] != null && dr[j].ToString() != string.Empty)
+                        {
+                            hasValue = true;
+                        }
+                    }
+                    if (hasValue)
+                    {
+                        dt.Rows.Add(dr);
+                    }
+                }
+            }
+            return dt;
+        }
+
+        /// <summary>
+        /// Datable导出成Excel
+        /// </summary>
+        /// <param name="dt"></param>
+        /// <param name="file">导出路径(包括文件名与扩展名)</param>
+        public static void TableToExcel(DataTable dt, string file)
+        {
+            IWorkbook workbook;
+            string fileExt = Path.GetExtension(file).ToLower();
+            if (fileExt == ".xlsx") { workbook = new XSSFWorkbook(); } else if (fileExt == ".xls") { workbook = new HSSFWorkbook(); } else { workbook = null; }
+            if (workbook == null) { return; }
+            ISheet sheet = string.IsNullOrEmpty(dt.TableName) ? workbook.CreateSheet("Sheet1") : workbook.CreateSheet(dt.TableName);
+
+            //表头  
+            IRow row = sheet.CreateRow(0);
+            for (int i = 0; i < dt.Columns.Count; i++)
+            {
+
+                ICell cell = row.CreateCell(i);
+                cell.SetCellValue(dt.Columns[i].ColumnName);
+                cell.CellStyle.WrapText = false;
+                                
+                ICellStyle style = workbook.CreateCellStyle();
+                //新建一个字体样式对象
+                IFont font = workbook.CreateFont();
+                //设置字体加粗样式                
+                font.Boldweight = (short)NPOI.SS.UserModel.FontBoldWeight.Bold;
+                font.FontHeightInPoints = 12;
+                //使用SetFont方法将字体样式添加到单元格样式中 
+                style.SetFont(font);
+                
+                //将新的样式赋给单元格
+                cell.CellStyle = style;
+                cell.CellStyle.SetFont(font);
+            }
+
+            //数据  
+            for (int i = 0; i < dt.Rows.Count; i++)
+            {
+                IRow row1 = sheet.CreateRow(i + 1);
+                for (int j = 0; j < dt.Columns.Count; j++)
+                {
+                    ICell cell = row1.CreateCell(j);
+                    cell.SetCellValue(dt.Rows[i][j].ToString());
+                }
+            }
+
+            //转为字节数组  
+            MemoryStream stream = new MemoryStream();
+            workbook.Write(stream);
+            var buf = stream.ToArray();
+
+            //保存为Excel文件  
+            using (FileStream fs = new FileStream(file, FileMode.Create, FileAccess.Write))
+            {
+                fs.Write(buf, 0, buf.Length);
+                fs.Flush();
+            }
+        }
+
+        /// <summary>
+        /// 获取单元格类型
+        /// </summary>
+        /// <param name="cell"></param>
+        /// <returns></returns>
+        private static object GetValueType(ICell cell)
+        {
+            if (cell == null)
+                return null;
+            switch (cell.CellType)
+            {
+                case CellType.Blank: //BLANK:  
+                    return null;
+                case CellType.Boolean: //BOOLEAN:  
+                    return cell.BooleanCellValue;
+                case CellType.Numeric: //NUMERIC:  
+                    return cell.NumericCellValue;
+                case CellType.String: //STRING:  
+                    return cell.StringCellValue;
+                case CellType.Error: //ERROR:  
+                    return cell.ErrorCellValue;
+                case CellType.Formula: //FORMULA:  
+                default:
+                    return "=" + cell.CellFormula;
+            }
+        }
+
+
+
+        /// <summary>
+        /// 将excel文件内容读取到DataTable数据表中
+        /// </summary>
+        /// <param name="fileName">文件完整路径名</param>
+        /// <param name="sheetName">指定读取excel工作薄sheet的名称</param>
+        /// <param name="isFirstRowColumn">第一行是否是DataTable的列名：true=是，false=否</param>
+        /// <returns>DataTable数据表</returns>
+        public static DataTable ReadExcelToDataTable(string fileName, string sheetName = null, bool isFirstRowColumn = true)
+        {
+            //定义要返回的datatable对象
+            DataTable data = new DataTable();
+            //excel工作表
+            NPOI.SS.UserModel.ISheet sheet = null;
+            //数据开始行(排除标题行)
+            int startRow = 0;
+            try
+            {
+                if (!File.Exists(fileName))
+                {
+                    return null;
+                }
+                //根据指定路径读取文件
+                FileStream fs = new FileStream(fileName, FileMode.Open, FileAccess.Read);
+                //根据文件流创建excel数据结构
+                NPOI.SS.UserModel.IWorkbook workbook = NPOI.SS.UserModel.WorkbookFactory.Create(fs);
+                //IWorkbook workbook = new HSSFWorkbook(fs);
+                //如果有指定工作表名称
+                if (!string.IsNullOrEmpty(sheetName))
+                {
+                    sheet = workbook.GetSheet(sheetName);
+                    //如果没有找到指定的sheetName对应的sheet，则尝试获取第一个sheet
+                    if (sheet == null)
+                    {
+                        sheet = workbook.GetSheetAt(0);
+                    }
+                }
+                else
+                {
+                    //如果没有指定的sheetName，则尝试获取第一个sheet
+                    sheet = workbook.GetSheetAt(0);
+                }
+                if (sheet != null)
+                {
+                    NPOI.SS.UserModel.IRow firstRow = sheet.GetRow(0);
+                    //一行最后一个cell的编号 即总的列数
+                    int cellCount = firstRow.LastCellNum;
+                    //如果第一行是标题列名
+                    if (isFirstRowColumn)
+                    {
+                        for (int i = firstRow.FirstCellNum; i < cellCount; ++i)
+                        {
+                            NPOI.SS.UserModel.ICell cell = firstRow.GetCell(i);
+                            if (cell != null)
+                            {
+                                string cellValue = cell.StringCellValue;
+                                if (cellValue != null)
+                                {
+                                    DataColumn column = new DataColumn(cellValue);
+                                    data.Columns.Add(column);
+                                }
+                            }
+                        }
+                        startRow = sheet.FirstRowNum + 1;
+                    }
+                    else
+                    {
+                        startRow = sheet.FirstRowNum;
+                    }
+                    //最后一列的标号
+                    int rowCount = sheet.LastRowNum;
+                    for (int i = startRow; i <= rowCount; ++i)
+                    {
+                        NPOI.SS.UserModel.IRow row = sheet.GetRow(i);
+                        if (row == null) continue; //没有数据的行默认是null　　　　　　　
+
+                        DataRow dataRow = data.NewRow();
+                        for (int j = row.FirstCellNum; j < cellCount; ++j)
+                        {
+                            if (row.GetCell(j) != null) //同理，没有数据的单元格都默认是null
+                                dataRow[j] = row.GetCell(j).ToString();
+                        }
+                        data.Rows.Add(dataRow);
+                    }
+                }
+                return data;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+
+
+
+        /// <summary>
+        /// 将文件流读取到DataTable数据表中
+        /// </summary>
+        /// <param name="fileStream">文件流</param>
+        /// <param name="sheetName">指定读取excel工作薄sheet的名称</param>
+        /// <param name="isFirstRowColumn">第一行是否是DataTable的列名：true=是，false=否</param>
+        /// <returns>DataTable数据表</returns>
+        public static DataTable ReadStreamToDataTable(Stream fileStream, string sheetName = null, bool isFirstRowColumn = true)
+        {
+            //定义要返回的datatable对象
+            DataTable data = new DataTable();
+            //excel工作表
+
+            NPOI.SS.UserModel.ISheet sheet = null;
+            //数据开始行(排除标题行)
+            int startRow = 0;
+            try
+            {
+                //根据文件流创建excel数据结构,NPOI的工厂类WorkbookFactory会自动识别excel版本，创建出不同的excel数据结构
+                NPOI.SS.UserModel.IWorkbook workbook = NPOI.SS.UserModel.WorkbookFactory.Create(fileStream);
+                //如果有指定工作表名称
+                if (!string.IsNullOrEmpty(sheetName))
+                {
+                    sheet = workbook.GetSheet(sheetName);
+                    //如果没有找到指定的sheetName对应的sheet，则尝试获取第一个sheet
+                    if (sheet == null)
+                    {
+                        sheet = workbook.GetSheetAt(0);
+                    }
+                }
+                else
+                {
+                    //如果没有指定的sheetName，则尝试获取第一个sheet
+                    sheet = workbook.GetSheetAt(0);
+                }
+                if (sheet != null)
+                {
+                    NPOI.SS.UserModel.IRow firstRow = sheet.GetRow(0);
+                    //一行最后一个cell的编号 即总的列数
+                    int cellCount = firstRow.LastCellNum;
+                    //如果第一行是标题列名
+                    if (isFirstRowColumn)
+                    {
+                        for (int i = firstRow.FirstCellNum; i < cellCount; ++i)
+                        {
+                            NPOI.SS.UserModel.ICell cell = firstRow.GetCell(i);
+                            if (cell != null)
+                            {
+                                string cellValue = cell.StringCellValue;
+                                if (cellValue != null)
+                                {
+                                    DataColumn column = new DataColumn(cellValue);
+                                    data.Columns.Add(column);
+                                }
+                            }
+                        }
+                        startRow = sheet.FirstRowNum + 1;
+                    }
+                    else
+                    {
+                        startRow = sheet.FirstRowNum;
+                    }
+                    //最后一列的标号
+                    int rowCount = sheet.LastRowNum;
+                    for (int i = startRow; i <= rowCount; ++i)
+                    {
+                        NPOI.SS.UserModel.IRow row = sheet.GetRow(i);
+                        if (row == null || row.FirstCellNum < 0) continue; //没有数据的行默认是null　　　　　　　
+
+                        DataRow dataRow = data.NewRow();
+                        for (int j = row.FirstCellNum; j < cellCount; ++j)
+                        {
+                            //同理，没有数据的单元格都默认是null
+                            NPOI.SS.UserModel.ICell cell = row.GetCell(j);
+                            if (cell != null)
+                            {
+                                if (cell.CellType == NPOI.SS.UserModel.CellType.Numeric)
+                                {
+                                    //判断是否日期类型
+                                    if (NPOI.SS.UserModel.DateUtil.IsCellDateFormatted(cell))
+                                    {
+                                        dataRow[j] = row.GetCell(j).DateCellValue;
+                                    }
+                                    else
+                                    {
+                                        dataRow[j] = row.GetCell(j).ToString().Trim();
+                                    }
+                                }
+                                else
+                                {
+                                    dataRow[j] = row.GetCell(j).ToString().Trim();
+                                }
+                            }
+                        }
+                        data.Rows.Add(dataRow);
+                    }
+                }
+                return data;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+
+
+
+
+
+
+    }
+}

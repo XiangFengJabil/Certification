@@ -1,0 +1,47 @@
+﻿* {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    width: 100%;
+    height: 100%;
+    /*overflow-x: hidden;
+    overflow-y: auto;*/
+}
+
+#mask {
+    display: none;
+    /*background: rgba(0,0,0,0.6);*/
+    background-color: #666666;
+    width: 100%;
+    height: 100%;
+    position: fixed;
+}
+
+#login {
+    display: none;
+    background: white;
+    width: 50%;
+    /*height: 90%;*/
+    position: fixed;
+    left: 25%;
+    top: 20%;
+    margin: 0 auto;
+    border: 1px solid #000;
+    z-index: 99999;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+    #login #close {
+        position: absolute;
+        right: 2px;
+        top: 2px;
+        font-size: 32px;
+        width: 35px;
+        height: 35px;
+        cursor: pointer;
+        text-align: center;
+        margin-top: -5px;
+    }

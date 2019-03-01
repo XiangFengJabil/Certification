@@ -1,0 +1,151 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+This file is used by the publish/package process of your Web project. You can customize the behavior of this process
+by editing this MSBuild file. In order to learn more about this please visit http://go.microsoft.com/fwlink/?LinkID=208121. 
+-->
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <TimeStampOfAssociatedLegacyPublishXmlFile />
+    <_PublishTargetUrl>\\sinwuxappdev02\c$\inetpub\wwwroot\PUReForm</_PublishTargetUrl>
+  </PropertyGroup>
+  <ItemGroup>
+    <File Include="bin/PUReForm.dll">
+      <publishTime>05/27/2015 15:03:33</publishTime>
+    </File>
+    <File Include="Controls/ApproveCtrl.ascx">
+      <publishTime>03/27/2015 09:13:29</publishTime>
+    </File>
+    <File Include="Controls/Menu.ascx">
+      <publishTime>05/12/2015 14:37:11</publishTime>
+    </File>
+    <File Include="Controls/QuotCtrl.ascx">
+      <publishTime>03/25/2015 13:37:34</publishTime>
+    </File>
+    <File Include="Controls/ReqHistoryCtrl.ascx">
+      <publishTime>03/24/2015 10:33:17</publishTime>
+    </File>
+    <File Include="Controls/RequestCtrl.ascx">
+      <publishTime>06/04/2015 09:50:58</publishTime>
+    </File>
+    <File Include="Default.aspx">
+      <publishTime>05/11/2015 11:19:15</publishTime>
+    </File>
+    <File Include="Global.asax">
+      <publishTime>03/24/2015 10:33:17</publishTime>
+    </File>
+    <File Include="Handler/GetGroups.ashx">
+      <publishTime>03/25/2015 15:09:35</publishTime>
+    </File>
+    <File Include="Handler/GetUserlist.ashx">
+      <publishTime>03/24/2015 10:33:36</publishTime>
+    </File>
+    <File Include="images/combined_v39_vr.png">
+      <publishTime>03/25/2015 14:31:50</publishTime>
+    </File>
+    <File Include="images/icon_oa_required.png">
+      <publishTime>03/25/2015 14:31:50</publishTime>
+    </File>
+    <File Include="images/jabil_log.jpg">
+      <publishTime>09/02/2014 13:47:48</publishTime>
+    </File>
+    <File Include="Request.aspx">
+      <publishTime>05/27/2015 15:02:24</publishTime>
+    </File>
+    <File Include="RequestList.aspx">
+      <publishTime>05/11/2015 11:19:15</publishTime>
+    </File>
+    <File Include="Scripts/additional-methods.js">
+      <publishTime>01/13/2015 13:42:59</publishTime>
+    </File>
+    <File Include="Scripts/additional-methods.min.js">
+      <publishTime>01/13/2015 13:43:00</publishTime>
+    </File>
+    <File Include="Scripts/jquery-1.7.1.min.js">
+      <publishTime>01/13/2015 13:43:01</publishTime>
+    </File>
+    <File Include="Scripts/jquery-ui-1.8.20.min.js">
+      <publishTime>01/13/2015 13:43:01</publishTime>
+    </File>
+    <File Include="Scripts/jquery.datetimepicker.js">
+      <publishTime>01/13/2015 13:43:00</publishTime>
+    </File>
+    <File Include="Scripts/jquery.metadata.js">
+      <publishTime>01/13/2015 13:43:00</publishTime>
+    </File>
+    <File Include="Scripts/jquery.ui.datetimepicker.js">
+      <publishTime>09/02/2014 13:47:45</publishTime>
+    </File>
+    <File Include="Scripts/jquery.ui.datetimepicker.min.js">
+      <publishTime>09/02/2014 13:47:45</publishTime>
+    </File>
+    <File Include="Scripts/jquery.ui.datetimepicker1.js">
+      <publishTime>09/02/2014 13:47:45</publishTime>
+    </File>
+    <File Include="Scripts/jquery.validate.js">
+      <publishTime>01/13/2015 13:43:01</publishTime>
+    </File>
+    <File Include="Scripts/jquery.validate.min.js">
+      <publishTime>01/13/2015 13:43:01</publishTime>
+    </File>
+    <File Include="Styles/global.css">
+      <publishTime>03/25/2015 14:32:19</publishTime>
+    </File>
+    <File Include="Styles/images/ui-bg_flat_0_aaaaaa_40x100.png">
+      <publishTime>09/02/2014 13:47:44</publishTime>
+    </File>
+    <File Include="Styles/images/ui-bg_flat_75_ffffff_40x100.png">
+      <publishTime>09/02/2014 13:47:44</publishTime>
+    </File>
+    <File Include="Styles/images/ui-bg_glass_55_fbf9ee_1x400.png">
+      <publishTime>09/02/2014 13:47:44</publishTime>
+    </File>
+    <File Include="Styles/images/ui-bg_glass_65_ffffff_1x400.png">
+      <publishTime>09/02/2014 13:47:44</publishTime>
+    </File>
+    <File Include="Styles/images/ui-bg_glass_75_dadada_1x400.png">
+      <publishTime>09/02/2014 13:47:44</publishTime>
+    </File>
+    <File Include="Styles/images/ui-bg_glass_75_e6e6e6_1x400.png">
+      <publishTime>09/02/2014 13:47:44</publishTime>
+    </File>
+    <File Include="Styles/images/ui-bg_glass_95_fef1ec_1x400.png">
+      <publishTime>09/02/2014 13:47:44</publishTime>
+    </File>
+    <File Include="Styles/images/ui-bg_highlight-soft_75_cccccc_1x100.png">
+      <publishTime>09/02/2014 13:47:44</publishTime>
+    </File>
+    <File Include="Styles/images/ui-icons_222222_256x240.png">
+      <publishTime>09/02/2014 13:47:44</publishTime>
+    </File>
+    <File Include="Styles/images/ui-icons_2e83ff_256x240.png">
+      <publishTime>09/02/2014 13:47:44</publishTime>
+    </File>
+    <File Include="Styles/images/ui-icons_454545_256x240.png">
+      <publishTime>09/02/2014 13:47:44</publishTime>
+    </File>
+    <File Include="Styles/images/ui-icons_888888_256x240.png">
+      <publishTime>09/02/2014 13:47:44</publishTime>
+    </File>
+    <File Include="Styles/images/ui-icons_cd0a0a_256x240.png">
+      <publishTime>09/02/2014 13:47:44</publishTime>
+    </File>
+    <File Include="Styles/jquery-ui.css">
+      <publishTime>11/11/2014 13:58:31</publishTime>
+    </File>
+    <File Include="Styles/jquery-ui.min.css">
+      <publishTime>09/02/2014 13:47:44</publishTime>
+    </File>
+    <File Include="Styles/jquery.ui.datetimepicker.css">
+      <publishTime>09/02/2014 13:47:45</publishTime>
+    </File>
+    <File Include="TaskerChange.aspx">
+      <publishTime>05/11/2015 11:19:15</publishTime>
+    </File>
+    <File Include="Tasks.aspx">
+      <publishTime>05/11/2015 11:19:14</publishTime>
+    </File>
+    <File Include="Web.config">
+      <publishTime>05/12/2015 14:35:05</publishTime>
+    </File>
+  </ItemGroup>
+</Project>

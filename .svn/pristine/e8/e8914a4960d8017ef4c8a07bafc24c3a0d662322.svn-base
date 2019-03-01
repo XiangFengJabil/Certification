@@ -1,0 +1,431 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Web;
+using System.Data.SqlClient;
+using System.Data;
+
+namespace Certification.DAL
+{
+    public class Org
+    {
+        #region below function don't change
+
+        private Model.UserInfo GetUser(string cmdText, params SqlParameter[] param)
+        {
+            Model.UserInfo user = null;
+            using (SqlDataReader reader = SqlHelper.ExecuteReader(cmdText, param))
+            {
+                if (reader.Read())
+                {
+                    user = SqlDataReaderToUser(reader);
+                }
+            }
+            return user;
+        }
+
+        private Model.UserInfo SqlDataReaderToUser(SqlDataReader reader)
+        {
+            Model.UserInfo user = new Model.UserInfo
+            {
+                UID = reader["userid"].ToString(),
+                Department = reader["dept"].ToString(),
+                DisplayName = reader["displayName"].ToString(),
+                Email = reader["mail"].ToString(),
+                Site = reader["site"].ToString()
+            };
+            return user;
+        }
+
+        public Model.UserInfo GetFM(int departId)
+        {
+            string cmdText = @"select u.userid,u.dept,u.displayName,u.mail,u.site 
+                            from department d left join WinADUser u on d.deptMgr=u.userid
+                            where d.deptid=@deptId";
+            SqlParameter param = new SqlParameter("@deptId", departId);
+            return GetUser(cmdText, param);
+        }
+
+        public Dictionary<int, string> GetDeptList()
+        {
+            string cmdText = "select deptId,deptName from department where status=1";
+            Dictionary<int, string> list = new Dictionary<int, string>();
+            using (SqlDataReader reader = SqlHelper.ExecuteReader(cmdText))
+            {
+                while (reader.Read())
+                {
+                    list.Add(
+                        int.Parse(reader["deptId"].ToString()),
+                        reader["deptName"].ToString()
+                    );
+                }
+            }
+            return list;
+        }
+
+        public Dictionary<int, string> GetWCList()
+        {
+            string cmdText = "select wcId,wcName from Workcell where status=1";
+            Dictionary<int, string> list = new Dictionary<int, string>();
+            using (SqlDataReader reader = SqlHelper.ExecuteReader(cmdText))
+            {
+                while (reader.Read())
+                {
+                    list.Add(
+                        int.Parse(reader["wcId"].ToString()),
+                        reader["wcName"].ToString()
+                    );
+                }
+            }
+            return list;
+        }
+
+        public Model.UserInfo GetWM(int workcellId)
+        {
+            string cmdText = @"select u.userid,u.dept,u.displayName,u.mail,u.site
+                                from workcell w inner join WinADUser u on u.userid=w.wcMgr
+                                where w.wcid=@WorkcellId";
+            SqlParameter[] parameters ={
+                new SqlParameter("@WorkcellId",workcellId)
+            };
+
+            return GetUser(cmdText, parameters);
+        }
+
+        public Model.UserInfo GetUser(string uid)
+        {
+            string cmdText = "select userid,dept,displayName,mail,site from WinADUser where userId=@uid";
+            SqlParameter param = new SqlParameter("@uid", uid);
+            return GetUser(cmdText, param);
+        }
+
+        public Model.UserInfo GetUser(int roleId)
+        {
+            string cmdText = @"select w.userid,w.dept,w.displayName,w.mail,w.site
+                                from RoleUser r inner join WinAdUser w on w.userid=r.uid
+                                where r.RoleId=@RoleId";
+            SqlParameter[] param ={
+                new SqlParameter("@RoleId",roleId)
+            };
+            return GetUser(cmdText, param);
+        }
+
+        public List<Model.UserInfo> GetUserList(int roleId)
+        {
+            string cmdText = @"select w.userid,w.dept,w.displayName,w.mail,w.site
+                                from RoleUser r inner join WinAdUser w on w.userid=r.uid
+                                where r.RoleId=@RoleId";
+            SqlParameter[] parameters ={
+                new SqlParameter("@RoleId",roleId)
+            };
+            List<Model.UserInfo> users = new List<Model.UserInfo>();
+            using (SqlDataReader reader = SqlHelper.ExecuteReader(cmdText, parameters))
+            {
+                while (reader.Read())
+                {
+                    Model.UserInfo user = SqlDataReaderToUser(reader);
+                    users.Add(user);
+                }
+            }
+            return users;
+        }
+
+
+
+        public void SaveUser(Model.UserInfo user)
+        {
+            string cmdText = @"insert into WinADUser (userid,displayName,fullName,mail,status,site)
+                            values (@UID,@DisplayName,@DisplayName,@Mail,1,@Site)";
+            SqlParameter[] paramters = {
+                new SqlParameter("@UID",user.UID),
+                new SqlParameter("@DisplayName",user.DisplayName),
+                new SqlParameter("@Mail",user.Email)
+            };
+            SqlHelper.ExecuteNonQuery(cmdText, paramters);
+        }
+
+        // for plant level role, the org id is 0, like OM.
+        public Model.UserInfo GetDelegator(string uid, int role, int orgId = 0)
+        {
+            string sql = @"select w.userid,w.displayName,w.mail,w.dept from Delegate d
+                            inner join WinADUser w 
+                            on d.DelegateTo=w.userid
+                            where d.DelegateFrom=@UID
+                            and d.OrgId=@orgId 
+                            and d.Role=@role
+                            and GETDATE() between d.StartTime and d.EndTime";
+            SqlParameter[] paramters = {
+                new SqlParameter("@UID",uid),
+                new SqlParameter("@role",role),
+                new SqlParameter("@orgId",orgId)
+            };
+            return GetUser(sql, paramters);
+        }
+
+        #endregion
+
+        public IList<Model.UserInfo> GetNTIDList(string prefix)
+        {
+            IList<Model.UserInfo> iList = new List<Model.UserInfo>();
+            string cmdText = @"select top 10 userid,displayname,mail from Winaduser 
+                                where (mail like @prefix or displayName like @prefix) 
+                                and status=1 order by displayName";
+            SqlParameter para = new SqlParameter("@prefix", prefix + "%");
+            using (SqlDataReader reader = SqlHelper.ExecuteReader(cmdText, para))
+            {
+                while (reader.Read())
+                {
+                    Model.UserInfo user = new Model.UserInfo()
+                    {
+                        UID = reader["userid"].ToString(),
+                        DisplayName = reader["displayname"].ToString(),
+                        Email = reader["mail"].ToString(),
+                    };
+                    iList.Add(user);
+                }
+            }
+            return iList;
+        }
+
+        public List<string> GetGroups(string userId)
+        {
+            List<string> groups = new List<string>();
+            string sql = @"select distinct RoleName 
+                            from RoleUser ru
+	                            inner join Role r on r.RoleId=ru.RoleId 
+                            where ru.uid=@uid and ru.status=1";
+            SqlParameter para = new SqlParameter("@uid", userId);
+            using (SqlDataReader reader = SqlHelper.ExecuteReader(sql, para))
+            {
+                while (reader.Read())
+                {
+                    groups.Add(reader["RoleName"].ToString());
+                }
+            }
+            return groups;
+        }
+
+        public Model.ApproverInfo GetLastEngApprover(int flowId)
+        {
+            Model.ApproverInfo lastApprover = null;
+            string sql = "select top 1 * from ApproverList where flowId=@flowId and approveType='eng' order by seqNo desc";
+            SqlParameter para = new SqlParameter("@flowId", flowId);
+            using (SqlDataReader reader = SqlHelper.ExecuteReader(sql, para))
+            {
+                if (reader.Read())
+                {
+                    lastApprover = new Model.ApproverInfo
+                    {
+                        SNO = int.Parse(reader["SNO"].ToString()),
+                        FlowId = int.Parse(reader["flowId"].ToString()),
+                        UID = reader["UID"].ToString(),
+                        SeqNo = int.Parse(reader["seqNo"].ToString()),
+                        ApproveType = reader["approveType"].ToString(),
+                        IsGroup = int.Parse(reader["isgroup"].ToString())
+                    };
+                }
+            }
+            return lastApprover;
+        }
+
+        public List<Model.ApproverInfo> GetApprovers(int flowId, string appType)
+        {
+            List<Model.ApproverInfo> list = new List<Model.ApproverInfo>();
+            string sql = @"select al.UID,al.isgroup,al.seqNo from ApproverList al
+                            where al.flowId=@flowId and al.approveType=@appType 
+                            order by al.seqNo";
+            SqlParameter[] parameters = new SqlParameter[] {
+                new SqlParameter("@flowId",flowId),
+                new SqlParameter("@appType",appType)
+            };
+            using (SqlDataReader reader = SqlHelper.ExecuteReader(sql, parameters))
+            {
+                while (reader.Read())
+                {
+                    Model.ApproverInfo a = new Model.ApproverInfo
+                    {
+                        UID = reader["UID"].ToString(),
+                        IsGroup = int.Parse(reader["isgroup"].ToString()),
+                        SeqNo = int.Parse(reader["seqNo"].ToString()),
+                    };
+                    list.Add(a);
+                }
+            }
+            return list;
+        }
+
+        public IList<Model.UserInfo> GetGroupNTIDList(string prefixText)
+        {
+            IList<Model.UserInfo> iList = new List<Model.UserInfo>();
+
+            string cmdText = @"select top 10 * from (
+	                                select userid,displayname,mail,0 as isgroup from WinADUser where status=1
+	                                union all
+	                                select distinct RoleName,RoleName,RoleName,1 as isgroup from RoleUser ru
+	                                inner join Role r on ru.RoleId=r.RoleId) a
+                                where (mail like @prefix or displayName like @prefix) 
+                                order by isgroup desc";
+            SqlParameter para = new SqlParameter("@prefix", prefixText + "%");
+            using (SqlDataReader reader = SqlHelper.ExecuteReader(cmdText, para))
+            {
+                while (reader.Read())
+                {
+                    Model.UserInfo user = new Model.UserInfo()
+                    {
+                        UID = reader["userid"].ToString(),
+                        DisplayName = reader["displayname"].ToString(),
+                        Email = reader["mail"].ToString(),
+                        IsGroup = int.Parse(reader["isgroup"].ToString())
+                    };
+                    iList.Add(user);
+                }
+            }
+            return iList;
+        }
+
+        public List<Model.ApproverInfo> GetApprovers(int flowId)
+        {
+            List<Model.ApproverInfo> list = new List<Model.ApproverInfo>();
+            string sql = @"select al.UID,al.approveType,w.displayName,w.mail,al.isgroup,al.seqNo 
+                            from ApproverList al 
+	                            left join WinADUser w on al.UID=w.userid 
+                            where flowId=@flowId 
+                            order by al.flowId,al.approvetype,al.seqNo";
+            SqlParameter para = new SqlParameter("@flowId", flowId);
+            using (SqlDataReader reader = SqlHelper.ExecuteReader(sql, para))
+            {
+                while (reader.Read())
+                {
+                    Model.ApproverInfo a = new Model.ApproverInfo
+                    {
+                        UID = reader["UID"].ToString(),
+                        DisplayName = reader["displayName"].ToString(),
+                        Mail = reader["mail"].ToString(),
+                        ApproveType = reader["approveType"].ToString(),
+                        IsGroup = int.Parse(reader["isgroup"].ToString()),
+                        SeqNo = int.Parse(reader["seqNo"].ToString()),
+                    };
+                    list.Add(a);
+                }
+            }
+            return list;
+        }
+
+        public int GetSiteId(string siteName)
+        {
+            string cmdText = "select SiteId from Site where Name=@Name";
+            SqlParameter param = new SqlParameter("@Name", siteName);
+            object obj = SqlHelper.ExecuteScalar(cmdText, param);
+            return obj == null ? -1 : Convert.ToInt32(obj);
+        }
+
+        public Dictionary<int, string> GetSiteList()
+        {
+            string cmdText = "select SiteId,Name from Site order by name";
+            Dictionary<int, string> list = new Dictionary<int, string>();
+            using (SqlDataReader reader = SqlHelper.ExecuteReader(cmdText))
+            {
+                while (reader.Read())
+                {
+                    list.Add(Convert.ToInt32(reader[0]), reader[1].ToString());
+                }
+            }
+            return list;
+        }
+
+
+        public void AddApprover(Model.ApproverInfo approverInfo)
+        {
+            string cmdText = @"insert into [ApproverList] (flowId,[UID],approveType,isgroup,seqNo)
+                                           values (@flowId,@UID,@approveType,@isgroup,@seqNo)";
+            SqlParameter[] parameters = new SqlParameter[]{
+                new SqlParameter("@flowId",approverInfo.FlowId),
+                new SqlParameter("@UID",approverInfo.UID),
+                new SqlParameter("@approveType",approverInfo.ApproveType),
+                new SqlParameter("@isgroup",approverInfo.IsGroup),
+                new SqlParameter("@seqNo",approverInfo.SeqNo),
+            };
+            SqlHelper.ExecuteNonQuery(cmdText, parameters);
+        }
+
+        public bool VerifyCertification(string uid, string skillSN)
+        {
+            //string cmdText = "select count(*) from Certification where NTID=@uid and SkillSN=@skillSN ";
+
+            string cmdText = "select count(a.NTID) from Certification as a " +
+                "left join " +
+                "( " +
+                    "SELECT top 1 NTID,SkillSN,[date]= attribute,value FROM Certification UNPIVOT " +
+                    "(value FOR attribute " +
+                        "IN([1st_1],[2nd_1], [3rd_1],[4th_1],[5th_1],[6th_1],[7th_1],[8th_1],[9th_1],[10th_1],[11th_1],[12th_1]) " +
+                    ") AS UNPVT " +
+                    "WHERE DATEADD(YYYY,1, [value]) > GETDATE() " +
+                    "AND NTID = @uid2 and SkillSN = @skillSN2 " +
+                    "order by value desc " +
+                ") as b " +
+                "on a.NTID = b.NTID and a.SkillSN = b.SkillSN " +
+                "where a.NTID=@uid and a.SkillSN=@skillSN ";
+
+            SqlParameter[] parameters = new SqlParameter[]{
+                new SqlParameter("@uid2",uid),
+                new SqlParameter("@skillSN2",skillSN),
+                new SqlParameter("@uid",uid),
+                new SqlParameter("@skillSN",skillSN),
+            };
+            Object obj = SqlHelper.ExecuteScalar(cmdText, parameters);
+            return obj == null ? false : (Convert.ToInt16(obj) > 0 ? true : false);
+        }
+
+        public List<Model.UserInfo> GetAdUserListByRoleName(string roleName)
+        {
+            List<Model.UserInfo> list = new List<Model.UserInfo>();
+            string sql = @"select ru.uid,w.displayName,w.mail from RoleUser ru
+                        inner join winaduser w on ru.uid=w.userid 
+                        where ru.status=1 
+	                        and ru.RoleID=(select RoleID from Role where RoleName=@roleName)";
+            SqlParameter[] parameters = new SqlParameter[]{
+                new SqlParameter("@roleName",roleName)
+            };
+            using (SqlDataReader reader = SqlHelper.ExecuteReader(sql, parameters))
+            {
+                while (reader.Read())
+                {
+                    Model.UserInfo u = new Model.UserInfo
+                    {
+                        UID = reader["uid"].ToString(),
+                        DisplayName = reader["displayName"].ToString(),
+                        Email = reader["mail"].ToString()
+                    };
+                    list.Add(u);
+                }
+            }
+            return list;
+        }
+
+        public Dictionary<int, string> GetForms(int siteID)
+        {
+            string cmdText = "select FormID,FormName from Form where status=1 and SiteID=@siteID order by FormName";
+            Dictionary<int, string> list = new Dictionary<int, string>();
+            SqlParameter para = new SqlParameter("@siteID", siteID);
+            using (SqlDataReader reader = SqlHelper.ExecuteReader(cmdText, para))
+            {
+                while (reader.Read())
+                {
+                    list.Add(Convert.ToInt32(reader[0]), reader[1].ToString());
+                }
+            }
+            return list;
+        }
+
+        public void UpdateApproverList(int flowId, string uid, string ouid, string approveType)
+        {
+            string sql = "update ApproverList set UID=@uid where flowId=@flowId and UID=@ouid and approveType=@approveType";
+            SqlParameter[] patameters = new SqlParameter[] {
+                new SqlParameter("@uid",uid),
+                new SqlParameter("@ouid",ouid),
+                new SqlParameter("@flowId",flowId),
+                new SqlParameter("@approveType",approveType)
+            };
+            SqlHelper.ExecuteNonQuery(sql, patameters);
+        }
+    }
+}

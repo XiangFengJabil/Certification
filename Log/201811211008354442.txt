@@ -1,0 +1,13 @@
+Time:    2018/11/21 10:08:35
+Action:  upload SendEmailExcel 
+Message: System.Net.Mail.SmtpException: The client or server is only configured for E-mail addresses with ASCII local-parts:  Long_Zhou@jabil.com.
+   at System.Net.Mail.MailAddress.GetUser(Boolean allowUnicode)
+   at System.Net.Mail.MailAddress.GetAddress(Boolean allowUnicode)
+   at System.Net.Mail.MailAddress.GetSmtpAddress(Boolean allowUnicode)
+   at System.Net.Mail.SmtpClient.ValidateUnicodeRequirement(MailMessage message, MailAddressCollection recipients, Boolean allowUnicode)
+   at System.Net.Mail.SmtpClient.Send(MailMessage message)
+   at Certification.Util.Common.ClientSendMail(String To, String Cc, String subject, String body) in C:\Project\Certification\Util\Common.cs:line 186
+   at Certification.RequestList.btnSendEmail_Click(Object sender, EventArgs e) in C:\Project\Certification\RequestList.aspx.cs:line 260
+-----------------------------------------------------------
+
+

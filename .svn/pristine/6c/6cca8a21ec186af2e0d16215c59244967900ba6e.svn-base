@@ -1,0 +1,44 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+
+namespace Certification.Handler
+{
+    /// <summary>
+    /// Summary description for VerifyCertification
+    /// </summary>
+    public class VerifyCertification : IHttpHandler
+    {
+
+        public void ProcessRequest(HttpContext context)
+        {
+            string NTID = context.Request.QueryString["NTID"];
+            string skillSN = context.Request.QueryString["skillSN"];
+            //string json = "[";
+            string json = "";
+            bool returnValue = BLL.OrgMgr.VerifyCertification(NTID, skillSN);
+            //foreach (var item in _users)
+            //{
+            json += "{\"HasCertification\":\"" +
+                         returnValue + "\",\"Msg\":\"请求成功\"\"";
+            //}
+            if (json.IndexOf(',') >= 0)
+            {
+                json = json.Remove(json.Length - 1, 1);
+            }
+            //json += "]";
+            json += "}";
+            context.Response.Clear();
+            context.Response.Write(json);
+        }
+
+        public bool IsReusable
+        {
+            get
+            {
+                return false;
+            }
+        }
+    }
+}

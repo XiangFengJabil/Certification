@@ -1,0 +1,387 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
+using System.Web;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+using Certification.BLL;
+using System.Web.UI.HtmlControls;
+using System.IO;
+using System.Data.OleDb;
+using System.Collections;
+
+namespace Certification
+{
+    public partial class RequestList : System.Web.UI.Page
+    {
+        protected void Page_Load(object sender, EventArgs e)
+        {
+            if (IsPostBack) return;
+
+            int act = Convert.ToInt32(Request.QueryString["act"]);
+            Model.UserInfo user = BLL.OrgMgr.GetCurrentAdUser();
+
+            if (user.UID == "1518819" || user.UID == "1258504" || user.UID == "1189648 ")
+            {
+                FileUpload1.Visible = true;
+                btnUploadExcel.Visible = true;
+            }
+            else
+            {
+                FileUpload1.Visible = false;
+                btnUploadExcel.Visible = false;
+            }
+
+            switch (act)
+            {
+                case 1:
+                    this.lbLocationTag.Text = "Home >> My List";
+                    ViewState["table"] = RequestMgr.GetRequestsByUID(user.UID);
+                    this.divFilter.Visible = false;
+                    this.dgvRequests.DataSource = ViewState["table"];
+                    this.dgvRequests.DataBind();
+                    break;
+                case 3:
+                    this.lbLocationTag.Text = "Home >> All List";
+                    ViewState["table"] = RequestMgr.GetAllRequests();
+                    this.dgvRequests.DataSource = ViewState["table"];
+                    this.dgvRequests.DataBind();
+                    //GroupRows(dgvRequests, 1);
+                    LoadControl();
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        private void LoadControl()
+        {
+            //this.ddlSites.DataSource = BLL.OrgMgr.GetSiteList();
+            //this.ddlSites.DataTextField = "value";
+            //this.ddlSites.DataValueField = "key";
+            //this.ddlSites.DataBind();
+            //this.ddlSites.SelectedValue = Util.Common.GetSiteId().ToString();
+
+            //this.ddlForms.DataSource = BLL.OrgMgr.GetForms(Convert.ToInt32(ddlSites.SelectedValue));
+            //this.ddlForms.DataTextField = "value";
+            //this.ddlForms.DataValueField = "key";
+            //this.ddlForms.DataBind();
+            //this.ddlForms.Items.Insert(0, new ListItem("N / A", "0"));
+
+            //this.ddlStatus.DataSource = BLL.WorkflowMgr.GetRequestStatusList();
+            //this.ddlStatus.DataTextField = "value";
+            //this.ddlStatus.DataValueField = "key";
+            //this.ddlStatus.DataBind();
+            //this.ddlStatus.Items.Insert(0, new ListItem("All", "All"));
+        }
+
+        protected void dgvRequests_PageIndexChanging(object sender, GridViewPageEventArgs e)
+        {
+            dgvRequests.PageIndex = e.NewPageIndex;
+            this.dgvRequests.DataSource = ViewState["table"];
+            this.dgvRequests.DataBind();
+        }
+
+        protected void btnSubmit_Click(object sender, EventArgs e)
+        {
+            //string site = this.ddlSites.SelectedValue;
+            //string form = this.ddlForms.SelectedValue;
+            //string status = this.ddlStatus.SelectedValue;
+            string item = this.ddlItems.SelectedValue;
+            string text = this.txtItem.Text.Trim();
+
+            //string date = this.ddlDate.SelectedValue;
+            //string startDate = this.txtStartDate.Text.Trim();
+            //string endDate = this.txtEndDate.Text.Trim();
+
+            DataTable table = RequestMgr.GetAllRequestsByFilter(item, text);
+            //DataTable table = RequestMgr.GetAllRequestsByFilter(item, text, date, startDate, endDate);
+            this.dgvRequests.DataSource = table;
+            this.dgvRequests.DataBind();
+            ViewState["table"] = table;
+        }
+
+        protected void dgvRequests_RowCreated(object sender, GridViewRowEventArgs e)
+        {
+            if (e.Row.RowType == DataControlRowType.Header)
+            {
+                //TableCellCollection tcHeader = e.Row.Cells;
+                //tcHeader.Clear();//原有表头清空
+            }
+        }
+
+        protected void btnUploadExcel_Click(object sender, EventArgs e)
+        {
+            //上传excel文件
+            string road = "";
+            #region 文件上传
+            try
+            {
+                //全名
+                string excelFile = this.FileUpload1.PostedFile.FileName;
+                //获取文件名（不包括扩展名）
+                string fileName = Path.GetFileNameWithoutExtension(FileUpload1.PostedFile.FileName);
+                //扩展名
+                string extentionName = excelFile.Substring(excelFile.LastIndexOf(".")).ToLower();
+                if (fileName == "" || fileName == null)
+                {
+                    Response.Write("<script>alert('Select Excel File！')</script>");
+                    return;
+                }
+                if (extentionName != ".xls" && extentionName != ".xlsx")
+                {
+                    Response.Write("<script>alert('Not an Excel file！')</script>");
+                    return;
+                }
+                //浏览器安全性限制 无法直接获取客户端文件的真实路径，将文件上传到服务器端 然后获取文件源路径
+
+                #region 设置上传路径将文件保存到服务器
+                string dateTime = DateTime.Now.ToString("yyyyMMddhhmmssffff");
+                string newFileName = "UpdateData_" + dateTime + DateTime.Now.Millisecond.ToString() + extentionName;
+                //TempExcel是自己创建的文件夹  位置随意   合理即可
+                road = Server.MapPath("./uploads/TempExcel") + "\\" + newFileName;
+                this.FileUpload1.PostedFile.SaveAs(road);
+                //Response.Write("<script>alert('已经上传到服务器文件夹')</script>");
+                #endregion
+
+            }
+            catch
+            {
+                Response.Write("<script>alert('Data upload failed, please re-import')</script>");
+                return;
+            }
+            #endregion
+
+
+            #region 数据导入到数据库中
+            try
+            {
+                //将Excel文件转成Datatable
+                //DataTable dtExcel = Common.UploadExcelFileBiz.GetExcelDatatable(road);
+                DataTable dtExcel = Common.ExcelHelper.ImportExcel(road);
+
+                //将Dtatable的列名与数据库的列名保持一致
+                int errorRow = 0;
+                dtExcel = Common.UploadExcelFileBiz.ModifyColumnsForCertificationTable(dtExcel, out errorRow);
+                if (errorRow != 0)
+                {
+                    Response.Write("<script>alert('Error, Import data failed！ Error Data Line " + errorRow + "')</script>");
+                    return;
+                }
+
+                //将Excel内容插入到数据库中
+                int iRows = Common.UploadExcelFileBiz.WriteIntoDataBase(dtExcel, "Certification");
+                if (iRows > 0)
+                {
+                    Response.Write("<script>alert('Import data success！')</script>");
+                }
+                else
+                {
+                    Response.Write("<script>alert('Error, Import data failed！')</script>");
+                }
+            }
+            catch
+            {
+                Response.Write("<script>alert('Import data failed！')</script>");
+                return;
+            }
+            #endregion
+        }
+
+        protected void btnSendEmail_Click(object sender, EventArgs e)
+        {
+            btnSendEmail.Enabled = false;
+            //上传Excel发送邮件
+            string road = "";
+            #region 上传Excel发送邮件
+            try
+            {
+                #region 设置上传路径将文件保存到服务器
+                //全名
+                string excelFile = this.FileUpload2.PostedFile.FileName;
+                //获取文件名（不包括扩展名）
+                string fileName = Path.GetFileNameWithoutExtension(FileUpload2.PostedFile.FileName);
+                //扩展名
+                string extentionName = excelFile.Substring(excelFile.LastIndexOf(".") + 1).ToLower();
+                if (fileName == "" || fileName == null)
+                {
+                    Response.Write("<script>alert('Select Excel File！')</script>");
+                    return;
+                }
+                if (extentionName != "xls" && extentionName != "xlsx")
+                {
+                    Response.Write("<script>alert('Not an Excel file！')</script>");
+                    return;
+                }
+                //浏览器安全性限制 无法直接获取客户端文件的真实路径，将文件上传到服务器端 然后获取文件源路径
+
+                string dateTime = DateTime.Now.ToString("yyyyMMddhhmmssffff");
+                string newFileName = "SendEmail_" + dateTime + ".xls";
+                //TempExcel是自己创建的文件夹  位置随意   合理即可
+                road = Server.MapPath("uploads/TempExcel") + "\\" + newFileName;
+                this.FileUpload2.PostedFile.SaveAs(road);
+                #endregion
+
+                //将Excel文件转成Datatable中
+                DataTable dtExcel = Common.Common.GetExcelDatatable(road);
+                string tempTable = "SendEmail";
+                ///1.获取datatble的表结构，插入到数据中。                
+                int iRow = Common.Common.CreateSqlTable(dtExcel, tempTable);
+                if (iRow > 0)
+                {
+                    //2.将数据插入到数据库中
+                    int insertCount = DAL.SqlHelper.SqlbulkcopyInsert(dtExcel, tempTable);
+                    if (insertCount == dtExcel.Rows.Count)
+                    {
+                        //去重后的部门
+                        DataTable dtDept = GetAllDept();
+                        //一次查出所有人员证书类型,证书号避免多次查询
+                        DataTable dtAllUser = GetAllWorkcellName();
+
+                        if (dtDept != null && dtDept.Rows.Count > 0)
+                        {
+                            string strBody = System.Configuration.ConfigurationManager.AppSettings["emailBody"];
+                            //发送次数  "Xiang_Feng@jabil.com,Jerry_Wang1@jabil.com,Hongshan_Xu@Jabil.com";
+                            for (int i = 0; i < dtDept.Rows.Count; i++)
+                            {
+                                string strDeptName = dtDept.Rows[i]["部门"].ToString();
+                                string deptUser = GetUserByDept(dtAllUser, "Workcell", strDeptName);
+
+                                string to = GetEmail(dtExcel, "部门", dtDept.Rows[i]["部门"].ToString());
+                                //string to = "Xiang_Feng@jabil.com";
+
+                                if (!string.IsNullOrEmpty(to) && !string.IsNullOrEmpty(deptUser))
+                                {
+                                    string cc = "Hongshan_Xu@Jabil.com";
+                                    string subject = "员工岗位技能认证到期提醒";
+                                    string body = "<p style='text-indent:25px;'>【<span style='color:red;'>重要提醒！！！</span>】" + strBody + "<br /><br />" + strDeptName + " 部门年检人员名单如下：<br /> " + TableStyle() + "<table  cellspacing='0'><tr><th> 人员 </th><th> 编号 </th></tr >" + deptUser + "</table></p>";
+
+                                    Certification.Util.Common.ClientSendMail(to, cc, subject, body);
+
+                                }
+                            }
+                            Response.Write("<script>alert('Mail sent successfully!');window.location.href=window.location.href;</script>");
+                            return;
+                        }
+                    }
+                    else
+                    {
+                        Response.Write("<script>alert('Error importing data');window.location.href=window.location.href;</script>");
+                        return;
+                    }
+                }
+                else
+                {
+                    Response.Write("<script>alert('Error,Error importing data structure！');window.location.href=window.location.href;</script>");
+                    return;
+                }
+            }
+            catch (Exception ex)
+            {
+                Common.Common.WriteTextLog("upload SendEmailExcel ", ex.ToString(), DateTime.Now);
+                Response.Write("<script>alert('Data upload failed, please re-import')</script>");
+                return;
+            }
+            #endregion
+        }
+
+        string TableStyle()
+        {
+            string str = "<style>table { width: 200px; border: 0; margin - top:10px;border-collapse: collapse; }";
+            str += "table tr th {background:#0073B2;color: White;border:1px solid #000000;}";
+            str += "table tr td {border: 1px solid #000000;}";
+            return str;
+        }
+
+
+        /// <summary>
+        /// 获取Excel去重后里面所有的部门
+        /// </summary>
+        /// <returns></returns>
+        DataTable GetAllDept()
+        {
+            string sql = "select distinct [部门] from dbo.SendEmail";
+
+            return DAL.SqlHelper.GetDataTableOfRecord(sql);
+        }
+
+        /// <summary>
+        /// 根据上传的Excel的部门查询出所有人员
+        /// </summary>
+        /// <returns></returns>
+        DataTable GetAllWorkcellName()
+        {
+            string sql = @"SELECT DISTINCT [NAME],SkillSN,Workcell FROM Certification WHERE Workcell IN 
+                        (select distinct[部门] as Workcell from dbo.SendEmail)";
+            return DAL.SqlHelper.GetDataTableOfRecord(sql);
+        }
+
+        /// <summary>
+        /// 获取Excel里面部门下面的邮箱
+        /// </summary>
+        /// <param name="dt"></param>
+        /// <param name="column">Excel里面门门字段</param>
+        /// <param name="dept">例如QA/Subsystem/Passive-module</param>
+        /// <returns></returns>
+        string GetEmail(DataTable dt, string column, string dept)
+        {
+            List<string> list = new List<string>();
+            if (dt != null && dt.Rows.Count > 0)
+            {
+                for (int i = 0; i < dt.Rows.Count; i++)
+                {
+                    if (dt.Rows[i][column].ToString() == dept)
+                        list.Add(dt.Rows[i]["邮箱"].ToString());
+                }
+            }
+            else
+                return "";
+            return string.Join(", ", list);
+        }
+
+        /// <summary>
+        /// 根据部门查询该部门下面的人员
+        /// </summary>
+        /// <param name="dt"></param>
+        /// <param name="column"></param>
+        /// <param name="dept"></param>
+        /// <returns></returns>
+        string GetUserByDept(DataTable dt, string column, string dept)
+        {
+            //List<string> list = new List<string>();
+            //if (dt != null && dt.Rows.Count > 0)
+            //{
+            //    for (int i = 0; i < dt.Rows.Count; i++)
+            //    {
+            //        if (dt.Rows[i][column].ToString() == dept)
+            //        {
+            //            list.Add(dt.Rows[i]["NAME"].ToString() + "-" + dt.Rows[i]["SkillSN"].ToString());
+            //        }
+            //    }
+            //}
+            //else
+            //    return "";
+            //return string.Join(", ", list);
+
+            string str = "";
+            if (dt != null && dt.Rows.Count > 0)
+            {
+                for (int i = 0; i < dt.Rows.Count; i++)
+                {
+                    if (dt.Rows[i][column].ToString() == dept)
+                    {
+                        str += "<tr><td> " + dt.Rows[i]["NAME"].ToString() + " </td><td> " + dt.Rows[i]["SkillSN"].ToString() + " </td></tr>";
+                    }
+                }
+            }
+            else
+                return "";
+            return str;
+        }
+
+
+
+
+    }
+}

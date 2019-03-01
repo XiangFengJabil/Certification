@@ -1,0 +1,219 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+This file is used by the publish/package process of your Web project. You can customize the behavior of this process
+by editing this MSBuild file. In order to learn more about this please visit http://go.microsoft.com/fwlink/?LinkID=208121. 
+-->
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <LastUsedBuildConfiguration>Release</LastUsedBuildConfiguration>
+    <LastUsedPlatform>Any CPU</LastUsedPlatform>
+    <TimeStampOfAssociatedLegacyPublishXmlFile />
+    <_PublishTargetUrl>C:\Publish\Certification\20180930</_PublishTargetUrl>
+  </PropertyGroup>
+  <ItemGroup>
+    <File Include="bin/Certification.dll">
+      <publishTime>09/30/2018 09:24:52</publishTime>
+    </File>
+    <File Include="bin/Certification.pdb">
+      <publishTime>09/30/2018 09:24:52</publishTime>
+    </File>
+    <File Include="bin/eApprovalTemplate.dll">
+      <publishTime>07/29/2014 17:11:46</publishTime>
+    </File>
+    <File Include="bin/PUReForm.dll">
+      <publishTime>03/31/2015 15:42:39</publishTime>
+    </File>
+    <File Include="Controls/ApproveCtrl.ascx">
+      <publishTime>03/27/2015 09:13:29</publishTime>
+    </File>
+    <File Include="Controls/menu.ascx">
+      <publishTime>07/30/2018 16:03:52</publishTime>
+    </File>
+    <File Include="Controls/QuotCtrl.ascx">
+      <publishTime>03/25/2015 13:37:34</publishTime>
+    </File>
+    <File Include="Controls/ReqHistoryCtrl.ascx">
+      <publishTime>03/24/2015 10:33:17</publishTime>
+    </File>
+    <File Include="Controls/RequestCtrl.ascx">
+      <publishTime>03/27/2015 11:03:02</publishTime>
+    </File>
+    <File Include="Default.aspx">
+      <publishTime>07/24/2018 14:50:17</publishTime>
+    </File>
+    <File Include="Global.asax">
+      <publishTime>07/24/2018 14:44:49</publishTime>
+    </File>
+    <File Include="Handler/GetGroups.ashx">
+      <publishTime>07/24/2018 14:44:49</publishTime>
+    </File>
+    <File Include="Handler/GetUserlist.ashx">
+      <publishTime>07/24/2018 14:44:49</publishTime>
+    </File>
+    <File Include="Handler/VerifyCertification.ashx">
+      <publishTime>09/28/2018 14:55:08</publishTime>
+    </File>
+    <File Include="images/combined_v39_vr.png">
+      <publishTime>03/29/2018 13:16:45</publishTime>
+    </File>
+    <File Include="images/icon_oa_required.png">
+      <publishTime>03/29/2018 13:16:45</publishTime>
+    </File>
+    <File Include="images/jabil_log.jpg">
+      <publishTime>03/29/2018 13:16:45</publishTime>
+    </File>
+    <File Include="Js/calendar.js">
+      <publishTime>07/26/2018 10:51:50</publishTime>
+    </File>
+    <File Include="Js/DatePicker/calendar.js">
+      <publishTime>07/26/2018 10:51:51</publishTime>
+    </File>
+    <File Include="Js/DatePicker/config.js">
+      <publishTime>07/26/2018 10:51:51</publishTime>
+    </File>
+    <File Include="Js/DatePicker/lang/en.js">
+      <publishTime>07/26/2018 10:51:51</publishTime>
+    </File>
+    <File Include="Js/DatePicker/lang/zh-cn.js">
+      <publishTime>07/26/2018 10:51:51</publishTime>
+    </File>
+    <File Include="Js/DatePicker/lang/zh-tw.js">
+      <publishTime>07/26/2018 10:51:51</publishTime>
+    </File>
+    <File Include="Js/DatePicker/My97DatePicker.htm">
+      <publishTime>07/26/2018 10:51:51</publishTime>
+    </File>
+    <File Include="Js/DatePicker/skin/datePicker.gif">
+      <publishTime>07/26/2018 10:51:51</publishTime>
+    </File>
+    <File Include="Js/DatePicker/skin/default/datepicker.css">
+      <publishTime>07/26/2018 10:51:51</publishTime>
+    </File>
+    <File Include="Js/DatePicker/skin/default/img.gif">
+      <publishTime>07/26/2018 10:51:51</publishTime>
+    </File>
+    <File Include="Js/DatePicker/skin/WdatePicker.css">
+      <publishTime>07/26/2018 10:51:51</publishTime>
+    </File>
+    <File Include="Js/DatePicker/WdatePicker.js">
+      <publishTime>07/26/2018 10:51:51</publishTime>
+    </File>
+    <File Include="Request.aspx">
+      <publishTime>03/26/2015 16:49:53</publishTime>
+    </File>
+    <File Include="RequestList.aspx">
+      <publishTime>09/30/2018 09:24:15</publishTime>
+    </File>
+    <File Include="Scripts/additional-methods.js">
+      <publishTime>03/29/2018 13:16:44</publishTime>
+    </File>
+    <File Include="Scripts/additional-methods.min.js">
+      <publishTime>03/29/2018 13:16:45</publishTime>
+    </File>
+    <File Include="Scripts/jquery-1.4.1-vsdoc.js">
+      <publishTime>07/22/2014 14:16:16</publishTime>
+    </File>
+    <File Include="Scripts/jquery-1.4.1.js">
+      <publishTime>07/22/2014 14:35:45</publishTime>
+    </File>
+    <File Include="Scripts/jquery-1.4.1.min.js">
+      <publishTime>07/22/2014 14:16:16</publishTime>
+    </File>
+    <File Include="Scripts/jquery-1.7.1.min.js">
+      <publishTime>03/29/2018 13:16:45</publishTime>
+    </File>
+    <File Include="Scripts/jquery-ui-1.8.20.min.js">
+      <publishTime>03/29/2018 13:16:45</publishTime>
+    </File>
+    <File Include="Scripts/jquery-ui-min.js">
+      <publishTime>07/22/2014 14:35:52</publishTime>
+    </File>
+    <File Include="Scripts/jquery.datetimepicker.js">
+      <publishTime>03/29/2018 13:16:45</publishTime>
+    </File>
+    <File Include="Scripts/jquery.metadata.js">
+      <publishTime>03/29/2018 13:16:45</publishTime>
+    </File>
+    <File Include="Scripts/jquery.ui.datetimepicker.js">
+      <publishTime>03/29/2018 13:16:45</publishTime>
+    </File>
+    <File Include="Scripts/jquery.ui.datetimepicker.min.js">
+      <publishTime>03/29/2018 13:16:45</publishTime>
+    </File>
+    <File Include="Scripts/jquery.ui.datetimepicker1.js">
+      <publishTime>03/29/2018 13:16:45</publishTime>
+    </File>
+    <File Include="Scripts/jquery.validate.js">
+      <publishTime>03/29/2018 13:16:45</publishTime>
+    </File>
+    <File Include="Scripts/jquery.validate.min.js">
+      <publishTime>03/29/2018 13:16:45</publishTime>
+    </File>
+    <File Include="Styles/global.css">
+      <publishTime>07/30/2018 16:05:43</publishTime>
+    </File>
+    <File Include="Styles/images/ui-bg_flat_0_aaaaaa_40x100.png">
+      <publishTime>03/29/2018 13:16:45</publishTime>
+    </File>
+    <File Include="Styles/images/ui-bg_flat_75_ffffff_40x100.png">
+      <publishTime>03/29/2018 13:16:45</publishTime>
+    </File>
+    <File Include="Styles/images/ui-bg_glass_55_fbf9ee_1x400.png">
+      <publishTime>03/29/2018 13:16:45</publishTime>
+    </File>
+    <File Include="Styles/images/ui-bg_glass_65_ffffff_1x400.png">
+      <publishTime>03/29/2018 13:16:45</publishTime>
+    </File>
+    <File Include="Styles/images/ui-bg_glass_75_dadada_1x400.png">
+      <publishTime>03/29/2018 13:16:45</publishTime>
+    </File>
+    <File Include="Styles/images/ui-bg_glass_75_e6e6e6_1x400.png">
+      <publishTime>03/29/2018 13:16:45</publishTime>
+    </File>
+    <File Include="Styles/images/ui-bg_glass_95_fef1ec_1x400.png">
+      <publishTime>03/29/2018 13:16:45</publishTime>
+    </File>
+    <File Include="Styles/images/ui-bg_highlight-soft_75_cccccc_1x100.png">
+      <publishTime>03/29/2018 13:16:45</publishTime>
+    </File>
+    <File Include="Styles/images/ui-icons_222222_256x240.png">
+      <publishTime>03/29/2018 13:16:45</publishTime>
+    </File>
+    <File Include="Styles/images/ui-icons_2e83ff_256x240.png">
+      <publishTime>03/29/2018 13:16:45</publishTime>
+    </File>
+    <File Include="Styles/images/ui-icons_454545_256x240.png">
+      <publishTime>03/29/2018 13:16:45</publishTime>
+    </File>
+    <File Include="Styles/images/ui-icons_888888_256x240.png">
+      <publishTime>03/29/2018 13:16:45</publishTime>
+    </File>
+    <File Include="Styles/images/ui-icons_cd0a0a_256x240.png">
+      <publishTime>03/29/2018 13:16:45</publishTime>
+    </File>
+    <File Include="Styles/jquery-ui.css">
+      <publishTime>03/29/2018 13:16:45</publishTime>
+    </File>
+    <File Include="Styles/jquery-ui.min.css">
+      <publishTime>03/29/2018 13:16:45</publishTime>
+    </File>
+    <File Include="Styles/jquery.ui.datetimepicker.css">
+      <publishTime>03/29/2018 13:16:45</publishTime>
+    </File>
+    <File Include="TaskerChange.aspx">
+      <publishTime>03/31/2015 11:29:50</publishTime>
+    </File>
+    <File Include="Tasks.aspx">
+      <publishTime>07/24/2018 14:53:17</publishTime>
+    </File>
+    <File Include="uploads/000003UR/GR&amp;R.xlsx">
+      <publishTime>03/29/2018 13:16:44</publishTime>
+    </File>
+    <File Include="uploads/000032UR/Machine Code in PM System.xlsx">
+      <publishTime>03/29/2018 13:16:44</publishTime>
+    </File>
+    <File Include="Web.config">
+      <publishTime>09/28/2018 16:09:36</publishTime>
+    </File>
+  </ItemGroup>
+</Project>

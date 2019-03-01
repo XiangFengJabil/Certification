@@ -1,0 +1,40 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
+using System.Web;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+
+namespace Certification
+{
+    public partial class OperationManage : System.Web.UI.Page
+    {
+        protected void Page_Load(object sender, EventArgs e)
+        {
+            if (!IsPostBack)
+                BindData("");
+        }
+
+        void BindData(string strDDLValue)
+        {
+            string sql = "SELECT OI.*,OS.COUNTITEM FROM OperationItem AS OI LEFT JOIN (SELECT OperationItemID, COUNT(0) AS COUNTITEM FROM OperationStandard GROUP BY OperationItemID) OS ON OI.ID = OS.OperationItemID";
+            if (!string.IsNullOrEmpty(strDDLValue) && strDDLValue != "ALL")
+                sql = string.Format("SELECT OI.*,OS.COUNTITEM FROM OperationItem AS OI LEFT JOIN (SELECT OperationItemID, COUNT(0) AS COUNTITEM FROM OperationStandard GROUP BY OperationItemID) OS ON OI.ID = OS.OperationItemID WHERE OI.OperationType = N'{0}' ", strDDLValue);
+
+            DataTable dt = DAL.SqlHelper.GetDataTableOfRecord(sql);
+
+            rptOperationManage.DataSource = dt;
+            rptOperationManage.DataBind();
+
+
+        }
+
+        protected void ddlOpeartionType_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            DropDownList ddl = sender as DropDownList;
+            string str = ddl.SelectedValue;
+            BindData(str);
+        }
+    }
+}

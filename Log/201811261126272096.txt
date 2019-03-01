@@ -1,0 +1,10 @@
+Time:    11/26/2018 11:26:27 AM
+Action:  Upload Dept Head 
+Message: System.ArgumentException: Sheet index (0) is out of range (no sheets)
+   at NPOI.XSSF.UserModel.XSSFWorkbook.ValidateSheetIndex(Int32 index)
+   at NPOI.XSSF.UserModel.XSSFWorkbook.GetSheetAt(Int32 index)
+   at Certification.Common.NPOIHelper.ExcelToTable(String file) in C:\Project\Certification\Common\NPOIHelper.cs:line 32
+   at Certification.DeptHead.btnUploadDeptHead_Click(Object sender, EventArgs e) in C:\Project\Certification\DeptHead.aspx.cs:line 71
+-----------------------------------------------------------
+
+
